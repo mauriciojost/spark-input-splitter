@@ -1,0 +1,18 @@
+data/
+grammarxpath/
+project/project/
+project/target/
+src/main/scala/common/target/
+target/
+testout/
+testout_bif/
+testout_sbrres/
+/.settings
+/.cache
+/.classpath
+/.project
+/result
+/tmp
+.idea
+# text editor tmp files
+*~
