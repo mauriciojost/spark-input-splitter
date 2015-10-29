@@ -1,3 +1,7 @@
+/data/input/
+/data/output/
+/logs/
+conf/spark-defaults.conf
 project/project/
 project/target/
 src/main/scala/common/target/
