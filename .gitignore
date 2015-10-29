@@ -1,0 +1,4 @@
+project/project/
+project/target/
+src/main/scala/common/target/
+.idea
