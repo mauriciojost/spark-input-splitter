@@ -1,4 +1,7 @@
-data/
+/data/input/
+/data/output/
+/logs/
+conf/spark-defaults.conf
 grammarxpath/
 project/project/
 project/target/
@@ -14,5 +17,3 @@ testout_sbrres/
 /result
 /tmp
 .idea
-# text editor tmp files
-*~

@@ -15,12 +15,9 @@ checksums in update := Nil
 
 scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked")
 
-libraryDependencies += "org.specs2" %% "specs2" % "2.4.2" % "test"
+libraryDependencies += "org.apache.spark" %% "spark-core" % "1.5.1" % "provided"
 
-libraryDependencies += "joda-time" % "joda-time" % "2.2"
-
-libraryDependencies += "org.apache.spark" %% "spark-core" % "1.3.1" % "provided"
-
+libraryDependencies += "com.holdenkarau" %% "spark-testing-base" % "1.3.0_0.2.0" % "test"
 
 resolvers += Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksamuel/sbt-plugins/"))(Resolver.ivyStylePatterns)
 
@@ -34,6 +31,8 @@ mergeStrategy in assembly <<= (mergeStrategy in assembly) { mergeStrategy => {
 }
 
 javacOptions in Compile ++= Seq("-source", "1.6",  "-target", "1.6")
+
+parallelExecution in Test := false
 
 packageArchetype.java_application
 
