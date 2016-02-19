@@ -1,9 +1,8 @@
-
 import AssemblyKeys._
 
 assemblySettings
 
-name := "spark-example"
+name := "spark-input-splitter"
 
 organization := "eu.pepot.eu"
 
@@ -18,6 +17,8 @@ scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked")
 libraryDependencies += "org.apache.spark" %% "spark-core" % "1.5.1" % "provided"
 
 libraryDependencies += "com.holdenkarau" %% "spark-testing-base" % "1.3.0_0.2.0" % "test"
+
+libraryDependencies += "org.specs2" %% "specs2-core" % "3.7" % "test"
 
 resolvers += Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksamuel/sbt-plugins/"))(Resolver.ivyStylePatterns)
 
