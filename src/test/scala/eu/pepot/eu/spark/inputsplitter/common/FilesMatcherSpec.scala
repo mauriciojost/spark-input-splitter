@@ -1,24 +1,47 @@
 package eu.pepot.eu.spark.inputsplitter.common
 
-import com.holdenkarau.spark.testing.SharedSparkContext
+import java.io.{FileNotFoundException, File}
+
+import org.specs2.mutable._
 import org.apache.hadoop.fs.Path
-import org.scalatest.FunSuite
 
-class FilesMatcherSpec extends FunSuite with SharedSparkContext {
+class FilesMatcherSpec extends Specification {
 
-  test("simple size based matching") {
+  "FilesMatcher" should {
 
-    val smallFile = FileDetails(new Path("src/test/resources/files/small.txt"), 10)
-    val bigFile = FileDetails(new Path("src/test/resources/files/big.txt"), 100)
-    val files = Seq(bigFile, smallFile)
+    "match files based on their size" in {
+      val smallFile = fileDetails("src/test/resources/files/small.txt")
+      val bigFile = fileDetails("src/test/resources/files/big.txt")
+      val files = Seq(bigFile, smallFile)
 
-    val condition = Condition(
-      biggerThan = Some(50)
-    )
+      val matches = FilesMatcher.matches(files, Condition(biggerThan = Some(50)))
 
-    val matches = FilesMatcher.matches(files, condition)
-    assert(matches.size == 1)
-    assert(matches(0).size == 100)
+      matches.size mustEqual 1
+      matches.head.size mustEqual bigFile.size
+      matches.head.path mustEqual bigFile.path
+    }
+
+    "match files based on their name" in {
+      val smallFile = fileDetails("src/test/resources/files/small.txt")
+      val bigFile = fileDetails("src/test/resources/files/big.txt")
+      val files = Seq(bigFile, smallFile)
+
+      val matches = FilesMatcher.matches(files, Condition(namePattern = Some(".*all.*")))
+
+      matches.size mustEqual 1
+      matches.head.size mustEqual smallFile.size
+      matches.head.path mustEqual smallFile.path
+    }
+
   }
 
+  def fileDetails(path: String): FileDetails = {
+    val p = new Path(path)
+    val f = new File(path)
+    if (!f.exists()) {
+      throw new FileNotFoundException(f.getAbsolutePath)
+    }
+    FileDetails(p, f.length())
+  }
 }
+
