@@ -19,14 +19,12 @@ object Example {
     val condition = Condition(fileBiggerThanMb = Some(10))
     val tsl = new TopSlicer(condition)
 
-    /*
-    implicit val ctK = ClassTag[LongWritable]_
-    implicit val ctV = ClassTag[Text]_
-    implicit val ctI = ClassTag[FileInputFormat[LongWritable, Text]]_
-    */
+    type K = LongWritable
+    type V = Text
+    type I = FileInputFormat[LongWritable, Text]
+    type O = FileOutputFormat[LongWritable, Text]
 
-    sc.hadoopFile[LongWritable, Text]("", classOf[FileInputFormat[LongWritable, Text]], classOf[LongWritable], classOf[Text])
-    tsl.topSlice[LongWritable, Text, FileInputFormat[LongWritable, Text], FileOutputFormat[LongWritable, Text]](classOf[FileInputFormat[LongWritable, Text]], classOf[FileOutputFormat[LongWritable, Text]], classOf[LongWritable], classOf[Text], "", "")
+    tsl.topSlice[K, V, I, O](classOf[I], classOf[O], classOf[K], classOf[V], "data/completes", "data/cuts")
 
     //tsl.topSlice("data/completes", "data/cuts") //, condition, LongWritable, Text,  FileOutputFormat[LongWritable, Text], FileInputFormat[LongWritable, Text])(sc)
 
@@ -61,9 +59,11 @@ private class TopSlicer(
     val cuttableFiles = Filter.cuttableFiles(files, condition)
     val listOfFiles = cuttableFiles.map(_.path.getName).mkString(",")
 
-    val cuttableRecords = sc.hadoopFile[K, V](listOfFiles, inputFormatClass, keyClass, valueClass)
+    listOfFiles.foreach(println)
 
-    cuttableRecords.saveAsObjectFile(cutsDirectory)
+    val cuttableRecords = sc.hadoopFile[K, V](completeDirectory, inputFormatClass, keyClass, valueClass)
+
+    cuttableRecords.saveAsTextFile(cutsDirectory)
   }
 
   def listAllFiles(completeDirectory: String)(implicit sc: SparkContext): Seq[InputFileDetails] = {
