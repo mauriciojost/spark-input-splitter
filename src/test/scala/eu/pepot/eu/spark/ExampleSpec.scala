@@ -1,4 +1,4 @@
-package eu.pepot.eu.examples
+package eu.pepot.eu.spark
 
 import com.holdenkarau.spark.testing.SharedSparkContext
 import org.scalatest.FunSuite
