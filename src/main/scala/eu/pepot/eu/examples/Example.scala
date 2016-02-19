@@ -2,10 +2,13 @@ package eu.pepot.eu.examples
 
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.io.{LongWritable, Text}
-import org.apache.hadoop.mapred.{FileOutputFormat, FileInputFormat, InputFormat, OutputFormat}
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat
+import org.apache.hadoop.mapreduce.{InputFormat, OutputFormat}
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.mutable
+import scala.reflect.ClassTag
 
 object Example {
 
@@ -21,8 +24,8 @@ object Example {
 
     type K = LongWritable
     type V = Text
-    type I = FileInputFormat[LongWritable, Text]
-    type O = FileOutputFormat[LongWritable, Text]
+    type I = TextInputFormat
+    type O = TextOutputFormat[K, V]
 
     tsl.topSlice[K, V, I, O](classOf[I], classOf[O], classOf[K], classOf[V], "data/completes", "data/cuts")
 
@@ -46,7 +49,7 @@ private class TopSlicer(
 
   //def foo[T:ClassTag](count: Int, value: T): Array[T] = Array.fill[T](count)(value)
 
-  def topSlice[K, V, I <: InputFormat[K, V], O <: OutputFormat[K, V]](
+  def topSlice[K: ClassTag, V: ClassTag, I <: InputFormat[K, V] : ClassTag, O <: OutputFormat[K, V] : ClassTag](
     inputFormatClass: Class[_ <: InputFormat[K, V]],
     outputFormatClass: Class[_ <: OutputFormat[K, V]],
     keyClass: Class[K],
@@ -56,12 +59,12 @@ private class TopSlicer(
   )(implicit sc: SparkContext): Unit = {
 
     val files = listAllFiles(completeDirectory)
+    files.foreach(println)
     val cuttableFiles = Filter.cuttableFiles(files, condition)
-    val listOfFiles = cuttableFiles.map(_.path.getName).mkString(",")
+    val listOfFiles = cuttableFiles.map(_.path).mkString(",")
+    println(listOfFiles)
 
-    listOfFiles.foreach(println)
-
-    val cuttableRecords = sc.hadoopFile[K, V](completeDirectory, inputFormatClass, keyClass, valueClass)
+    val cuttableRecords = sc.newAPIHadoopFile[K, V, I](listOfFiles)
 
     cuttableRecords.saveAsTextFile(cutsDirectory)
   }
