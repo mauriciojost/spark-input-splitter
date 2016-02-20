@@ -11,17 +11,7 @@ class SplitReader(
   condition: Condition
 ) {
 
-  /**
-    *
-    * @param completeDirectory
-    * @param splitsDirectory
-    * @param sc
-    * @tparam K
-    * @tparam V
-    * @tparam I
-    * @tparam O
-    */
-  def splitRead[
+  def selectiveSplitRDD[
   K: ClassTag,
   V: ClassTag,
   I <: InputFormat[K, V] : ClassTag,
@@ -29,25 +19,16 @@ class SplitReader(
   ](
     completeDirectory: String,
     splitsDirectory: String
-  )(implicit sc: SparkContext): Unit = {
-    val cuttableRecords: RDD[(K, V)] = selectiveSplitRDD(completeDirectory, splitsDirectory)
-    cuttableRecords.saveAsNewAPIHadoopFile[O](splitsDirectory)
-  }
-
-  def selectiveSplitRDD[
-  O <: OutputFormat[K, V] : ClassTag,
-  I <: InputFormat[K, V] : ClassTag,
-  V: ClassTag,
-  K: ClassTag
-  ](
-    completeDirectory: String,
-    splitsDirectory: String
   )(implicit sc: SparkContext): RDD[(K, V)] = {
-    val allFiles = FileLister.listAllFiles(completeDirectory)
-    val splittedFiles = FilesMatcher.matches(allFiles, condition)
-    val alreadyOkayFiles = FilesSubstractor.substract(allFiles, splittedFiles)
+    val allFiles = FileLister.listNonHiddenFiles(completeDirectory)
+    val eligibleFiles = FilesMatcher.matches(allFiles, condition)
+    val splittedFiles = FileLister.listNonHiddenFiles(splitsDirectory)
+    val alreadyOkayFiles = FilesSubstractor.substract(allFiles, eligibleFiles)
 
-    sc.newAPIHadoopFile[K, V, I](alreadyOkayFiles.toStringList())
+    println("ALREADY OKAY: " + alreadyOkayFiles.toStringList())
+    println("SPLITTED: " + splittedFiles.toStringList())
+
+    sc.newAPIHadoopFile[K, V, I](alreadyOkayFiles.toStringList() + "," + splittedFiles.toStringList())
   }
 
 

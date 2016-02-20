@@ -1,5 +1,5 @@
-1onelinefrombigfile
-2onelinefrombigfile
-3onelinefrombigfile
-4onelinefrombigfile
-5onelinefrombigfile
+1	onelinefrombigfile
+2	onelinefrombigfile
+3	onelinefrombigfile
+4	onelinefrombigfile
+5	onelinefrombigfile

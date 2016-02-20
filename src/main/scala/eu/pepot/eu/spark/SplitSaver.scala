@@ -42,7 +42,7 @@ class SplitSaver(
   ](
     completeDirectory: String
   )(implicit sc: SparkContext): RDD[(K, V)] = {
-    val files = FileLister.listAllFiles(completeDirectory)
+    val files = FileLister.listNonHiddenFiles(completeDirectory)
     val cuttableFiles = FilesMatcher.matches(files, condition)
     sc.newAPIHadoopFile[K, V, I](cuttableFiles.toStringList())
   }
