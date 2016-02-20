@@ -1,1 +1,1 @@
-onelinefromsmallfile
+1	onelinefromsmallfile

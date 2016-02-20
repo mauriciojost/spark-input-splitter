@@ -19,7 +19,16 @@ object FileLister {
     FileDetailsSet(
       files = files.toSeq
     )
+  }
 
+  def listNonHiddenFiles(directory: String)(implicit sc: SparkContext): FileDetailsSet = {
+    discardHidden(listAllFiles(directory))
+  }
+
+  def discardHidden(files: FileDetailsSet): FileDetailsSet = {
+    FileDetailsSet(
+      files = files.files.filter(f => !f.path.getName.contains("_SUCCESS"))
+    )
   }
 
 }
