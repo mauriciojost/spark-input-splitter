@@ -10,14 +10,18 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 object Example {
 
+  val input = "src/test/resources/files"
+  val splits = "data/splits"
+
   def main(args: Array[String]) {
 
     val sparkConf = new SparkConf()
-    sparkConf.registerKryoClasses(Array())
+    sparkConf.setAppName("Example")
+    sparkConf.setMaster("local[1]")
 
     implicit val sc = new SparkContext(sparkConf)
 
-    val condition = Condition(biggerThan = Some(10))
+    val condition = Condition(biggerThan = Some(50))
     val splitter = new Splitter(condition)
 
     type K = LongWritable
@@ -25,7 +29,7 @@ object Example {
     type I = TextInputFormat
     type O = TextOutputFormat[K, V]
 
-    splitter.selectiveSplit[K, V, I, O](classOf[I], classOf[O], classOf[K], classOf[V], "data/completes", "data/cuts")
+    splitter.selectiveSplitSave[K, V, I, O](classOf[I], classOf[O], classOf[K], classOf[V], input, splits)
 
   }
 
