@@ -15,10 +15,6 @@ class Splitter(
 
   /**
     *
-    * @param inputFormatClass
-    * @param outputFormatClass
-    * @param keyClass
-    * @param valueClass
     * @param completeDirectory
     * @param cutsDirectory
     * @param sc
@@ -33,10 +29,6 @@ class Splitter(
   I <: InputFormat[K, V] : ClassTag,
   O <: OutputFormat[K, V] : ClassTag
   ](
-    inputFormatClass: Class[_ <: InputFormat[K, V]],
-    outputFormatClass: Class[_ <: OutputFormat[K, V]],
-    keyClass: Class[K],
-    valueClass: Class[V],
     completeDirectory: String,
     cutsDirectory: String
   )(implicit sc: SparkContext): Unit = {

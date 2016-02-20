@@ -29,7 +29,7 @@ object Example {
     type I = TextInputFormat
     type O = TextOutputFormat[K, V]
 
-    splitter.selectiveSplitSave[K, V, I, O](classOf[I], classOf[O], classOf[K], classOf[V], input, splits)
+    splitter.selectiveSplitSave[K, V, I, O](input, splits)
 
   }
 
