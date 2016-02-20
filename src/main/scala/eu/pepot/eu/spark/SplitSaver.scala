@@ -1,15 +1,13 @@
 package eu.pepot.eu.spark
 
-import eu.pepot.eu.spark.inputsplitter.common.{FileDetails, FilesMatcher, Condition}
-import org.apache.hadoop.fs.{FileSystem, Path}
+import eu.pepot.eu.spark.inputsplitter.common._
 import org.apache.hadoop.mapreduce.{InputFormat, OutputFormat}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 
-import scala.collection.mutable
 import scala.reflect.ClassTag
 
-class Splitter(
+class SplitSaver(
   condition: Condition
 ) {
 
@@ -36,8 +34,6 @@ class Splitter(
     cuttableRecords.saveAsNewAPIHadoopFile[O](cutsDirectory)
   }
 
-  //def fromTopSliced[A](completeDirectory: String, cutsDirectory: String)(implicit sc: SparkContext): RDD[A] = { }
-
   def selectiveSplitRDD[
   O <: OutputFormat[K, V] : ClassTag,
   I <: InputFormat[K, V] : ClassTag,
@@ -46,22 +42,9 @@ class Splitter(
   ](
     completeDirectory: String
   )(implicit sc: SparkContext): RDD[(K, V)] = {
-    val files = listAllFiles(completeDirectory)
+    val files = FileLister.listAllFiles(completeDirectory)
     val cuttableFiles = FilesMatcher.matches(files, condition)
-    val listOfFiles = cuttableFiles.map(_.path).mkString(",")
-    sc.newAPIHadoopFile[K, V, I](listOfFiles)
+    sc.newAPIHadoopFile[K, V, I](cuttableFiles.toStringList())
   }
-
-  private def listAllFiles(completeDirectory: String)(implicit sc: SparkContext): Seq[FileDetails] = {
-    val allCompleteFilesIterator = FileSystem.get(sc.hadoopConfiguration).listFiles(new Path(completeDirectory), true)
-    val files = mutable.ArrayBuffer[FileDetails]()
-    while (allCompleteFilesIterator.hasNext) {
-      val completeFile = allCompleteFilesIterator.next()
-      val fileDetails = FileDetails(completeFile.getPath, completeFile.getLen)
-      files += fileDetails
-    }
-    files.toSeq
-  }
-
 
 }
