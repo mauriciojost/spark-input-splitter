@@ -7,7 +7,7 @@ import org.apache.spark.rdd.RDD
 
 import scala.reflect.ClassTag
 
-class SplitSaver(
+class SplitWriter(
   condition: Condition
 ) {
 
