@@ -1,6 +1,6 @@
 package eu.pepot.eu.spark.inputsplitter.examples
 
-import eu.pepot.eu.spark.inputsplitter.SplitSaver
+import eu.pepot.eu.spark.inputsplitter.SplitWriter
 import eu.pepot.eu.spark.inputsplitter.common.Condition
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat
@@ -27,7 +27,7 @@ object ExampleSplitSave {
     implicit val sc = new SparkContext(sparkConf)
 
     val condition = Condition(biggerThan = Some(50))
-    val splitter = new SplitSaver(condition)
+    val splitter = new SplitWriter(condition)
 
     type K = Text
     type V = Text
