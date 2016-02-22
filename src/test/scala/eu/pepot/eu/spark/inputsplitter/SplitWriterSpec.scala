@@ -10,32 +10,30 @@ import org.scalatest.FunSuite
 
 class SplitWriterSpec extends FunSuite with CustomSparkContext {
 
-  test("simple flagging") {
+  type K = Text
+  type V = Text
+  type I = KeyValueTextInputFormat
+  type O = TextOutputFormat[K, V]
+
+  val input = "src/test/resources/inputs"
+  val splits = "src/test/resources/splits"
+
+  test("the split writer splits the big file") {
 
     implicit val scc = sc
 
-    val input = "src/test/resources/inputs"
-    val splits = "src/test/resources/splits"
-    val output = "data/ouptut"
-
-    // TODO change name SplitSaver to SplitWriter
-    val conditionForSplitting = Condition(biggerThan = Some(50)) // Same already used in SplitSaver
+    val conditionForSplitting = Condition(biggerThan = Some(50)) // only big.txt is bigger than this
 
     val splitWriter = new SplitWriter(conditionForSplitting)
 
-    type K = Text
-    type V = Text
-    type I = KeyValueTextInputFormat
-    type O = TextOutputFormat[K, V]
+    val rddWithOnlyBigFileSplit = splitWriter.selectiveSplitRDD[O, I, K, V](input)
 
-    val rddWithSplitInput = splitWriter.selectiveSplitRDD[O, I, K, V](input)
+    val expectedRddWithOnlyBigFileSplit = sc.newAPIHadoopFile[K, V, I](splits)
 
-    val expected = sc.newAPIHadoopFile[K, V, I](splits)
-
-    assert(expected.count() == 5)
-    assert(rddWithSplitInput.count() == 5)
-    assert(expected.count() == rddWithSplitInput.count())
-    assert(None === RDDComparisions.compare(expected, rddWithSplitInput))
+    assert(expectedRddWithOnlyBigFileSplit.count() == 5)
+    assert(rddWithOnlyBigFileSplit.count() == 5)
+    assert(expectedRddWithOnlyBigFileSplit.count() == rddWithOnlyBigFileSplit.count())
+    assert(None === RDDComparisions.compare(expectedRddWithOnlyBigFileSplit, rddWithOnlyBigFileSplit))
   }
 
 }

@@ -1,0 +1,2 @@
+1	onelinefromsmallfile1
+2	onelinefromsmallfile1
