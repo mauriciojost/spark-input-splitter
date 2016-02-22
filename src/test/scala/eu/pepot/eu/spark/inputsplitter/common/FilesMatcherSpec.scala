@@ -10,8 +10,8 @@ class FilesMatcherSpec extends Specification {
   "FilesMatcher" should {
 
     "match files based on their size" in {
-      val smallFile = fileDetails("src/test/resources/files/small.txt")
-      val bigFile = fileDetails("src/test/resources/files/big.txt")
+      val smallFile = fileDetails("src/test/resources/inputs/small.txt")
+      val bigFile = fileDetails("src/test/resources/inputs/big.txt")
       val files = FileDetailsSet(Seq(bigFile, smallFile))
 
       val FileDetailsSet(matches) = FilesMatcher.matches(files, Condition(biggerThan = Some(50)))
@@ -22,8 +22,8 @@ class FilesMatcherSpec extends Specification {
     }
 
     "match files based on their name" in {
-      val smallFile = fileDetails("src/test/resources/files/small.txt")
-      val bigFile = fileDetails("src/test/resources/files/big.txt")
+      val smallFile = fileDetails("src/test/resources/inputs/small.txt")
+      val bigFile = fileDetails("src/test/resources/inputs/big.txt")
       val files = FileDetailsSet(Seq(bigFile, smallFile))
 
       val FileDetailsSet(matches) = FilesMatcher.matches(files, Condition(namePattern = Some(".*all.*")))
