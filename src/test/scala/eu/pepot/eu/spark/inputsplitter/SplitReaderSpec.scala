@@ -10,30 +10,28 @@ import org.scalatest.FunSuite
 
 class SplitReaderSpec extends FunSuite with CustomSparkContext {
 
-  test("simple flagging") {
+  type K = Text
+  type V = Text
+  type I = KeyValueTextInputFormat
+  type O = TextOutputFormat[K, V]
+
+  val input = "src/test/resources/inputs"
+  val splits = "src/test/resources/splits"
+
+  test("the split reader reads correctly the merge of split and input files") {
 
     implicit val scc = sc
 
-    val input = "src/test/resources/inputs"
-    val splits = "src/test/resources/splits"
-    val output = "data/ouptut"
-
-    // TODO change name SplitSaver to SplitWriter
-    val conditionForSplitting = Condition(biggerThan = Some(50)) // Same already used in SplitSaver
+    val conditionForSplitting = Condition(biggerThan = Some(50)) // Expecting to have splits of files bigger than 50 bytes
 
     val splitReader = new SplitReader(conditionForSplitting)
-
-    type K = Text
-    type V = Text
-    type I = KeyValueTextInputFormat
-    type O = TextOutputFormat[K, V]
 
     val rddWithWholeInput = splitReader.selectiveSplitRDD[K, V, I, O](input, splits)
 
     val expected = sc.newAPIHadoopFile[K, V, I](input)
 
-    assert(expected.count() == 6)
-    assert(rddWithWholeInput.count() == 6)
+    assert(expected.count() == 9)
+    assert(rddWithWholeInput.count() == 9)
     assert(expected.count() == rddWithWholeInput.count())
     assert(None === RDDComparisions.compare(expected, rddWithWholeInput))
   }
