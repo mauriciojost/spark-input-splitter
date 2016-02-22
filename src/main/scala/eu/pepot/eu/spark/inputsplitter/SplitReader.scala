@@ -1,4 +1,4 @@
-package eu.pepot.eu.spark
+package eu.pepot.eu.spark.inputsplitter
 
 import eu.pepot.eu.spark.inputsplitter.common._
 import org.apache.hadoop.mapreduce.{InputFormat, OutputFormat}
@@ -25,10 +25,8 @@ class SplitReader(
     val splittedFiles = FileLister.listNonHiddenFiles(splitsDirectory)
     val alreadyOkayFiles = FilesSubstractor.substract(allFiles, eligibleFiles)
 
-    println("ALREADY OKAY: " + alreadyOkayFiles.toStringList())
-    println("SPLITTED: " + splittedFiles.toStringList())
+    sc.newAPIHadoopFile[K, V, I](alreadyOkayFiles.toStringListWith(splittedFiles))
 
-    sc.newAPIHadoopFile[K, V, I](alreadyOkayFiles.toStringList() + "," + splittedFiles.toStringList())
   }
 
 

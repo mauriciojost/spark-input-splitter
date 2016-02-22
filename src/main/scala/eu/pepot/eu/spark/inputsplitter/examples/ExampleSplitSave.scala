@@ -1,6 +1,6 @@
 package eu.pepot.eu.spark.inputsplitter.examples
 
-import eu.pepot.eu.spark.SplitSaver
+import eu.pepot.eu.spark.inputsplitter.SplitSaver
 import eu.pepot.eu.spark.inputsplitter.common.Condition
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat
