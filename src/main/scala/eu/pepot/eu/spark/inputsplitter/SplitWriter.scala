@@ -5,6 +5,7 @@ import org.apache.hadoop.mapreduce.{InputFormat, OutputFormat}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.hadoop.fs.FileSystem
+import org.slf4j.LoggerFactory
 
 import scala.reflect.ClassTag
 
@@ -12,16 +13,8 @@ class SplitWriter(
   condition: Condition
 ) {
 
-  /**
-    *
-    * @param completeDirectory
-    * @param cutsDirectory
-    * @param sc
-    * @tparam K
-    * @tparam V
-    * @tparam I
-    * @tparam O
-    */
+  val logger = LoggerFactory.getLogger(this.getClass)
+
   def selectiveSplitSave[
   K: ClassTag,
   V: ClassTag,
@@ -48,6 +41,10 @@ class SplitWriter(
 
     val files = FileLister.listFiles(completeDirectory)
     val cuttableFiles = FilesMatcher.matches(files, condition)
+
+    logger.warn("Using input: {}", completeDirectory)
+    logger.warn("Detected splittables: {}", cuttableFiles)
+
     sc.newAPIHadoopFile[K, V, I](cuttableFiles.toStringList())
   }
 
