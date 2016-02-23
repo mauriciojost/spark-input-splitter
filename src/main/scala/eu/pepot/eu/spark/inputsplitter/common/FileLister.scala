@@ -1,14 +1,12 @@
 package eu.pepot.eu.spark.inputsplitter.common
 
 import org.apache.hadoop.fs.{FileSystem, Path}
-import org.apache.spark.SparkContext
-
 import scala.collection.mutable
 
 object FileLister {
 
-  def listAllFiles(completeDirectory: String)(implicit sc: SparkContext): FileDetailsSet = {
-    val allCompleteFilesIterator = FileSystem.get(sc.hadoopConfiguration).listFiles(new Path(completeDirectory), true)
+  def listFiles(directory: String)(implicit fs: FileSystem): FileDetailsSet = {
+    val allCompleteFilesIterator = fs.listFiles(new Path(directory), true)
     val files = mutable.ArrayBuffer[FileDetails]()
     while (allCompleteFilesIterator.hasNext) {
       val completeFile = allCompleteFilesIterator.next()
@@ -18,16 +16,6 @@ object FileLister {
 
     FileDetailsSet(
       files = files.toSeq
-    )
-  }
-
-  def listNonHiddenFiles(directory: String)(implicit sc: SparkContext): FileDetailsSet = {
-    discardHidden(listAllFiles(directory))
-  }
-
-  def discardHidden(files: FileDetailsSet): FileDetailsSet = {
-    FileDetailsSet(
-      files = files.files.filter(f => !f.path.getName.contains("_SUCCESS"))
     )
   }
 
