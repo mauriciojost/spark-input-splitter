@@ -45,7 +45,7 @@ class FilesMatcherSpec extends Specification {
 
   }
 
-  def fileDetails(path: String): FileDetails = {
+  private def fileDetails(path: String): FileDetails = {
     val p = new Path(path)
     val f = new File(path)
     if (!f.exists()) {
@@ -53,5 +53,6 @@ class FilesMatcherSpec extends Specification {
     }
     FileDetails(p, f.length())
   }
+
 }
 
