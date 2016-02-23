@@ -16,7 +16,8 @@ object FilesMatcher {
 
   private def matchesCondition(file: FileDetails, condition: Condition): Boolean = {
     condition.biggerThan.map(minimalSize => file.size > minimalSize).getOrElse(false) ||
-      condition.namePattern.map(namePattern => file.path.toString.matches(namePattern)).getOrElse(false)
+      condition.namePattern.map(namePattern => file.path.toString.matches(namePattern)).getOrElse(false) ||
+        condition.pathCondition.map(f => f(file.path)).getOrElse(false)
   }
 
 }

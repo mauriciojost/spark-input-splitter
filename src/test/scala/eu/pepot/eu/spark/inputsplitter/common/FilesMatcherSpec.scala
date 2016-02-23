@@ -33,6 +33,16 @@ class FilesMatcherSpec extends Specification {
       matches.head.path mustEqual smallFile.path
     }
 
+    "match files based on a given path condition" in {
+      val smallFile = fileDetails("src/test/resources/inputs/small1.txt")
+      val bigFile = fileDetails("src/test/resources/inputs/big.txt")
+      val files = FileDetailsSet(Seq(bigFile, smallFile))
+
+      val FileDetailsSet(matches) = FilesMatcher.matches(files, Condition(pathCondition = Some((p: Path) => p.isAbsolute)))
+
+      matches.size mustEqual 0
+    }
+
   }
 
   def fileDetails(path: String): FileDetails = {
