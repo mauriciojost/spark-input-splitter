@@ -52,6 +52,7 @@ It comes with a `split writer` and a `split reader` to be used in such order.
 2. Then `split reader` is used to read `splits` together with `smalls`, resulting in an RDD equivalent to one generated from `input`.
 
 ## Use cases
+
 You will find useful this library on the following use cases:
 
 - Your Spark jobs use many input files whose sizes are not homogeneous, causing your Spark phase to be sometimes delayed for the late processing of some big file.
