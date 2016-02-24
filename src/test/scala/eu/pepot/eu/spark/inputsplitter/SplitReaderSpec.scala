@@ -36,5 +36,25 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext {
     assert(None === RDDComparisions.compare(expected, rddWithWholeInput))
   }
 
+  test("the split reader reads correctly the merge of split and input files (with path)") {
+
+    implicit val scc = sc
+
+    val conditionForSplitting = Condition(biggerThan = Some(50)) // Expecting to have splits of files bigger than 50 bytes
+
+    val splitReader = new SplitReader(conditionForSplitting)
+
+    val rddWithWholeInput = splitReader.selectiveSplitRDDWithPath[K, V, I, O](input, splits)
+
+    val expected = sc.newAPIHadoopFile[K, V, I](input)
+
+    assert(expected.count() == 9)
+    assert(rddWithWholeInput.count() == 9)
+    assert(expected.count() == rddWithWholeInput.count())
+    assert(None === RDDComparisions.compare(expected, rddWithWholeInput.map{case (path, k, v) => (k,v)}))
+
+    rddWithWholeInput.collect().foreach(println)
+  }
+
 }
 
