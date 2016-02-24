@@ -46,8 +46,10 @@ smalls  | | | |
 ```
 
 It comes with a `split writer` and a `split reader` to be used in such order. 
-First `splits` must be written with `split writer` from `bigs` (identified using a `condition`). 
-Then `split reader` is used to read `splits` together with `smalls`, resulting in an RDD equivalent to one generated from `input`.
+
+1. First `splits` must be written with `split writer` from `bigs` (identified using a `condition`). 
+
+2. Then `split reader` is used to read `splits` together with `smalls`, resulting in an RDD equivalent to one generated from `input`.
 
 ## Use cases
 You will find useful this library on the following use cases:
