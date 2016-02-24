@@ -7,9 +7,9 @@ import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat
 import org.apache.spark.{SparkConf, SparkContext}
 
-object ExampleSplitSave {
+object ExampleSplitWrite {
 
-  val input = "src/test/resources/files"
+  val input = "src/test/resources/inputs"
   val splits = "data/splits"
 
   def main(args: Array[String]) {
@@ -34,7 +34,7 @@ object ExampleSplitSave {
     type I = KeyValueTextInputFormat
     type O = TextOutputFormat[K, V]
 
-    splitter.selectiveSplitSave[K, V, I, O](input, splits)
+    splitter.selectiveSplitWrite[K, V, I, O](input, splits)
 
   }
 

@@ -15,7 +15,7 @@ class SplitWriter(
 
   val logger = LoggerFactory.getLogger(this.getClass)
 
-  def selectiveSplitSave[
+  def selectiveSplitWrite[
   K: ClassTag,
   V: ClassTag,
   I <: InputFormat[K, V] : ClassTag,
