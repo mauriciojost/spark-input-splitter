@@ -53,7 +53,6 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext {
     assert(expected.count() == rddWithWholeInput.count())
     assert(None === RDDComparisions.compare(expected, rddWithWholeInput.map{case (path, k, v) => (k,v)}))
 
-    rddWithWholeInput.collect().foreach(println)
   }
 
 }
