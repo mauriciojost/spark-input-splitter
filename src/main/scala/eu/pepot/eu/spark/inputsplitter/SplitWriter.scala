@@ -29,7 +29,7 @@ class SplitWriter(
     bigsRecords.saveAsHadoopFile[O](splitsDirO.getSplitsPath)
   }
 
-  def writeNew[
+  def writeNewAPI[
   K: ClassTag,
   V: ClassTag,
   I <: mapreduce.InputFormat[K, V] : ClassTag,
@@ -51,7 +51,7 @@ class SplitWriter(
   ](
     inputDir: String
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
-    val bigs = filterBigs[K, V](inputDir)(sc)
+    val bigs = determineBigs[K, V](inputDir)(sc)
     val rdd = sc.hadoopFile[K, V, I](bigs.toStringList())
     SplitDetails[K, V](rdd, bigs)
   }
@@ -64,12 +64,12 @@ class SplitWriter(
   ](
     inputDir: String
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
-    val bigs = filterBigs[K, V](inputDir)(sc)
+    val bigs = determineBigs[K, V](inputDir)(sc)
     val rdd = sc.newAPIHadoopFile[K, V, I](bigs.toStringList())
     SplitDetails[K, V](rdd, bigs)
   }
 
-  private def filterBigs[
+  private def determineBigs[
   K: ClassTag,
   V: ClassTag
   ](

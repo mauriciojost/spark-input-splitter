@@ -34,7 +34,7 @@ object ExampleSplitWrite {
     type I = KeyValueTextInputFormat
     type O = TextOutputFormat[K, V]
 
-    splitter.writeNew[K, V, I, O](input, splits)
+    splitter.writeNewAPI[K, V, I, O](input, splits)
 
   }
 

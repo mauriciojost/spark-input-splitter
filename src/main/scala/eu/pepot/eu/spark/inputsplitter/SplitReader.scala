@@ -15,41 +15,41 @@ class SplitReader(
 
   val logger = LoggerFactory.getLogger(this.getClass)
 
-  def selectiveSplitRDD[
+  def rdd[
   K: ClassTag,
   V: ClassTag,
   I <: InputFormat[K, V] : ClassTag,
   O <: OutputFormat[K, V] : ClassTag
   ](
-    completeDirectory: String,
-    splitsDirectory: String
+    inputDir: String,
+    splitsDir: String
   )(implicit sc: SparkContext): RDD[(K, V)] = {
-    val (splittedFiles, notToBeSplittedFiles) = determineSplittables(completeDirectory, splitsDirectory)
-    sc.newAPIHadoopFile[K, V, I](notToBeSplittedFiles.toStringListWith(splittedFiles))
+    val (splits, smalls) = determineBigs(inputDir, splitsDir)
+    sc.newAPIHadoopFile[K, V, I](smalls.toStringListWith(splits))
   }
 
-  def selectiveSplitRDDWithPath[
+  def rddWithPath[
   K: ClassTag,
   V: ClassTag,
   I <: InputFormat[K, V] : ClassTag,
   O <: OutputFormat[K, V] : ClassTag
   ](
-    completeDirectory: String,
-    splitsDirectory: String
+    inputDir: String,
+    splitsDir: String
   )(implicit sc: SparkContext): RDD[(Path, K, V)] = {
-    val (splittedFiles, notToBeSplittedFiles) = determineSplittables(completeDirectory, splitsDirectory)
-    SparkUtils.openWithPath[K, V, I](notToBeSplittedFiles.toStringListWith(splittedFiles))
+    val (splits, smalls) = determineBigs(inputDir, splitsDir)
+    SparkUtils.openWithPath[K, V, I](smalls.toStringListWith(splits))
   }
 
-  private def determineSplittables(
-    completeDirectory: String,
-    splitsDirectory: String
+  private[inputsplitter] def determineBigs(
+    inputDir: String,
+    splitsDir: String
   )(implicit sc: SparkContext): (FileDetailsSet, FileDetailsSet) = {
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
-    val allFiles = FileLister.listFiles(completeDirectory)
-    val eligibleFiles = FilesMatcher.matches(allFiles, condition)
-    val splittedFiles = FileLister.listFiles(splitsDirectory)
-    val notToBeSplittedFiles = FilesSubstractor.substract(allFiles, eligibleFiles)
-    (splittedFiles, notToBeSplittedFiles)
+    val input = FileLister.listFiles(inputDir)
+    val bigs = FilesMatcher.matches(input, condition)
+    val splits = FileLister.listFiles(splitsDir)
+    val smalls = FilesSubstractor.substract(input, bigs)
+    (splits, smalls)
   }
 }

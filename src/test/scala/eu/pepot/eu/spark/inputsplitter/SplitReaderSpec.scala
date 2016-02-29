@@ -26,7 +26,7 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext {
 
     val splitReader = new SplitReader(conditionForSplitting)
 
-    val rddWithWholeInput = splitReader.selectiveSplitRDD[K, V, I, O](input, splits)
+    val rddWithWholeInput = splitReader.rdd[K, V, I, O](input, splits)
 
     val expected = sc.newAPIHadoopFile[K, V, I](input)
 
@@ -44,7 +44,7 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext {
 
     val splitReader = new SplitReader(conditionForSplitting)
 
-    val rddWithWholeInput = splitReader.selectiveSplitRDDWithPath[K, V, I, O](input, splits)
+    val rddWithWholeInput = splitReader.rddWithPath[K, V, I, O](input, splits)
 
     val expected = sc.newAPIHadoopFile[K, V, I](input)
 
