@@ -53,7 +53,7 @@ class SplitWriter(
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
     val bigs = determineBigs[K, V](inputDir)(sc)
     val rdd = sc.hadoopFile[K, V, I](bigs.toStringList())
-    SplitDetails[K, V](rdd, bigs)
+    SplitDetails[K, V](rdd, None, Some(bigs), None)
   }
 
   private[inputsplitter] def asRddNew[
@@ -66,7 +66,7 @@ class SplitWriter(
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
     val bigs = determineBigs[K, V](inputDir)(sc)
     val rdd = sc.newAPIHadoopFile[K, V, I](bigs.toStringList())
-    SplitDetails[K, V](rdd, bigs)
+    SplitDetails[K, V](rdd, None, Some(bigs), None)
   }
 
   private def determineBigs[

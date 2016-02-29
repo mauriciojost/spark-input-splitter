@@ -35,7 +35,7 @@ object ExampleSplitRead {
     type I = KeyValueTextInputFormat
     type O = TextOutputFormat[K, V]
 
-    val rdd = splitter.rdd[K, V, I, O](input, splits)
+    val rdd = splitter.rdd[K, V, I, O](input, splits).rdd
 
     rdd.saveAsNewAPIHadoopFile[O](output)
 

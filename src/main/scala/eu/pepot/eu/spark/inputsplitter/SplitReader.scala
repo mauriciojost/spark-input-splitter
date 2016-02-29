@@ -1,10 +1,9 @@
 package eu.pepot.eu.spark.inputsplitter
 
 import eu.pepot.eu.spark.inputsplitter.common._
-import org.apache.hadoop.fs.{Path, FileSystem}
+import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.mapreduce.{InputFormat, OutputFormat}
 import org.apache.spark.SparkContext
-import org.apache.spark.rdd.RDD
 import org.slf4j.LoggerFactory
 
 import scala.reflect.ClassTag
@@ -23,22 +22,10 @@ class SplitReader(
   ](
     inputDir: String,
     splitsDir: String
-  )(implicit sc: SparkContext): RDD[(K, V)] = {
+  )(implicit sc: SparkContext): SplitDetails[K, V] = {
     val (splits, smalls) = determineBigs(inputDir, splitsDir)
-    sc.newAPIHadoopFile[K, V, I](smalls.toStringListWith(splits))
-  }
-
-  def rddWithPath[
-  K: ClassTag,
-  V: ClassTag,
-  I <: InputFormat[K, V] : ClassTag,
-  O <: OutputFormat[K, V] : ClassTag
-  ](
-    inputDir: String,
-    splitsDir: String
-  )(implicit sc: SparkContext): RDD[(Path, K, V)] = {
-    val (splits, smalls) = determineBigs(inputDir, splitsDir)
-    SparkUtils.openWithPath[K, V, I](smalls.toStringListWith(splits))
+    val rdd = sc.newAPIHadoopFile[K, V, I](smalls.toStringListWith(splits))
+    SplitDetails[K, V](rdd, Some(splits), None, Some(smalls))
   }
 
   private[inputsplitter] def determineBigs(
