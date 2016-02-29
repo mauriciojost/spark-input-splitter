@@ -16,70 +16,70 @@ class SplitWriter(
 
   val logger = LoggerFactory.getLogger(this.getClass)
 
-  def selectiveSplitWriteOld[
+  def write[
   K: ClassTag,
   V: ClassTag,
   I <: mapred.InputFormat[K, V] : ClassTag,
   O <: mapred.OutputFormat[K, V] : ClassTag
   ](
-    completeDirectory: String,
-    cutsDirectory: String
+    inputDir: String,
+    splitsDir: String
   )(implicit sc: SparkContext): Unit = {
-    val cuttableRecords: RDD[(K, V)] = selectiveSplitRDDOld(completeDirectory)
-    cuttableRecords.saveAsHadoopFile[O](cutsDirectory)
+    val bigsRecords: RDD[(K, V)] = asRdd(inputDir)
+    bigsRecords.saveAsHadoopFile[O](splitsDir)
   }
 
-  def selectiveSplitWrite[
+  def writeNew[
   K: ClassTag,
   V: ClassTag,
   I <: mapreduce.InputFormat[K, V] : ClassTag,
   O <: mapreduce.OutputFormat[K, V] : ClassTag
   ](
-    completeDirectory: String,
-    cutsDirectory: String
+    inputDir: String,
+    splitsDir: String
   )(implicit sc: SparkContext): Unit = {
-    val cuttableRecords: RDD[(K, V)] = selectiveSplitRDD(completeDirectory)
-    cuttableRecords.saveAsNewAPIHadoopFile[O](cutsDirectory)
+    val bigsRecords: RDD[(K, V)] = asRddNew(inputDir)
+    bigsRecords.saveAsNewAPIHadoopFile[O](splitsDir)
   }
 
-  def selectiveSplitRDDOld[
+  private[inputsplitter] def asRdd[
   O <: mapred.OutputFormat[K, V] : ClassTag,
   I <: mapred.InputFormat[K, V] : ClassTag,
   V: ClassTag,
   K: ClassTag
   ](
-    completeDirectory: String
+    inputDir: String
   )(implicit sc: SparkContext): RDD[(K, V)] = {
 
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
 
-    val files = FileLister.listFiles(completeDirectory)
-    val cuttableFiles = FilesMatcher.matches(files, condition)
+    val input = FileLister.listFiles(inputDir)
+    val bigs = FilesMatcher.matches(input, condition)
 
-    logger.warn("Using input: {}", completeDirectory)
-    logger.warn("Detected splittables: {}", cuttableFiles)
+    logger.warn("Using input: {}", inputDir)
+    logger.warn("Detected splittables: {}", bigs)
 
-    sc.hadoopFile[K, V, I](cuttableFiles.toStringList())
+    sc.hadoopFile[K, V, I](bigs.toStringList())
   }
 
-  def selectiveSplitRDD[
+  private[inputsplitter] def asRddNew[
   O <: mapreduce.OutputFormat[K, V] : ClassTag,
   I <: mapreduce.InputFormat[K, V] : ClassTag,
   V: ClassTag,
   K: ClassTag
   ](
-    completeDirectory: String
+    inputDir: String
   )(implicit sc: SparkContext): RDD[(K, V)] = {
 
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
 
-    val files = FileLister.listFiles(completeDirectory)
-    val cuttableFiles = FilesMatcher.matches(files, condition)
+    val input = FileLister.listFiles(inputDir)
+    val bigs = FilesMatcher.matches(input, condition)
 
-    logger.warn("Using input: {}", completeDirectory)
-    logger.warn("Detected splittables: {}", cuttableFiles)
+    logger.warn("Using input: {}", inputDir)
+    logger.warn("Detected bigs: {}", bigs)
 
-    sc.newAPIHadoopFile[K, V, I](cuttableFiles.toStringList())
+    sc.newAPIHadoopFile[K, V, I](bigs.toStringList())
   }
 
 }

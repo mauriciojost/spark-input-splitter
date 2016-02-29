@@ -34,7 +34,7 @@ object ExampleSplitWrite {
     type I = KeyValueTextInputFormat
     type O = TextOutputFormat[K, V]
 
-    splitter.selectiveSplitWrite[K, V, I, O](input, splits)
+    splitter.writeNew[K, V, I, O](input, splits)
 
   }
 

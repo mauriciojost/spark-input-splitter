@@ -18,7 +18,7 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext {
   val input = "src/test/resources/inputs"
   val splits = "src/test/resources/splits"
 
-  test("the split reader reads correctly the merge of split and input files") {
+  test("the split reader reads correctly the merge of split and smalls") {
 
     implicit val scc = sc
 
@@ -36,7 +36,7 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext {
     assert(None === RDDComparisions.compare(expected, rddWithWholeInput))
   }
 
-  test("the split reader reads correctly the merge of split and input files (with path)") {
+  test("the split reader reads correctly the merge of split and smalls (with path)") {
 
     implicit val scc = sc
 

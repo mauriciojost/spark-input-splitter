@@ -18,7 +18,7 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext {
   val input = "src/test/resources/inputs"
   val splits = "src/test/resources/splits"
 
-  test("the split writer splits the big file") {
+  test("the split writer splits the bigs") {
 
     implicit val scc = sc
 
@@ -26,14 +26,14 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext {
 
     val splitWriter = new SplitWriter(conditionForSplitting)
 
-    val rddWithOnlyBigFileSplit = splitWriter.selectiveSplitRDD[O, I, K, V](input)
+    val rddWithOnlyBigsRecords = splitWriter.asRddNew[O, I, K, V](input)
 
     val expectedRddWithOnlyBigFileSplit = sc.newAPIHadoopFile[K, V, I](splits)
 
     assert(expectedRddWithOnlyBigFileSplit.count() == 5)
-    assert(rddWithOnlyBigFileSplit.count() == 5)
-    assert(expectedRddWithOnlyBigFileSplit.count() == rddWithOnlyBigFileSplit.count())
-    assert(None === RDDComparisions.compare(expectedRddWithOnlyBigFileSplit, rddWithOnlyBigFileSplit))
+    assert(rddWithOnlyBigsRecords.count() == 5)
+    assert(expectedRddWithOnlyBigFileSplit.count() == rddWithOnlyBigsRecords.count())
+    assert(None === RDDComparisions.compare(expectedRddWithOnlyBigFileSplit, rddWithOnlyBigsRecords))
   }
 
 }
