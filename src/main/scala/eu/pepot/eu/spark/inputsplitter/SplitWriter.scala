@@ -2,8 +2,7 @@ package eu.pepot.eu.spark.inputsplitter
 
 import eu.pepot.eu.spark.inputsplitter.common._
 import org.apache.hadoop.fs.FileSystem
-import org.apache.hadoop.mapreduce
-import org.apache.hadoop.mapred
+import org.apache.hadoop.{mapred, mapreduce}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.slf4j.LoggerFactory
@@ -51,18 +50,10 @@ class SplitWriter(
   K: ClassTag
   ](
     inputDir: String
-  )(implicit sc: SparkContext): Split[K, V] = {
-
-    implicit val fs = FileSystem.get(sc.hadoopConfiguration)
-
-    val input = FileLister.listFiles(inputDir)
-    val bigs = FilesMatcher.matches(input, condition)
-
-    logger.warn("Using input: {}", inputDir)
-    logger.warn("Detected splittables: {}", bigs)
-
+  )(implicit sc: SparkContext): SplitDetails[K, V] = {
+    val bigs = filterBigs[K, V](inputDir)(sc)
     val rdd = sc.hadoopFile[K, V, I](bigs.toStringList())
-    Split[K, V](rdd, bigs)
+    SplitDetails[K, V](rdd, bigs)
   }
 
   private[inputsplitter] def asRddNew[
@@ -72,24 +63,25 @@ class SplitWriter(
   K: ClassTag
   ](
     inputDir: String
-  )(implicit sc: SparkContext): Split[K, V] = {
-
-    implicit val fs = FileSystem.get(sc.hadoopConfiguration)
-
-    val input = FileLister.listFiles(inputDir)
-    val bigs = FilesMatcher.matches(input, condition)
-
-    logger.warn("Using input: {}", inputDir)
-    logger.warn("Detected bigs: {}", bigs)
-
+  )(implicit sc: SparkContext): SplitDetails[K, V] = {
+    val bigs = filterBigs[K, V](inputDir)(sc)
     val rdd = sc.newAPIHadoopFile[K, V, I](bigs.toStringList())
-    Split[K, V](rdd, bigs)
+    SplitDetails[K, V](rdd, bigs)
+  }
+
+  private def filterBigs[
+  K: ClassTag,
+  V: ClassTag
+  ](
+    inputDir: String
+  )(sc: SparkContext): FileDetailsSet = {
+    implicit val fs = FileSystem.get(sc.hadoopConfiguration)
+    val input = FileLister.listFiles(inputDir)
+    logger.warn("Using input: {}", inputDir)
+    val bigs = FilesMatcher.matches(input, condition)
+    logger.warn("Detected bigs: {}", bigs)
+    bigs
   }
 
 }
-
-case class Split[K, V](
-  rdd: RDD[(K, V)],
-  bigs: FileDetailsSet
-)
 
