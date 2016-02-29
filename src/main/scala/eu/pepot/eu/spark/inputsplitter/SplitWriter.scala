@@ -25,8 +25,9 @@ class SplitWriter(
     inputDir: String,
     splitsDir: String
   )(implicit sc: SparkContext): Unit = {
-    val bigsRecords: RDD[(K, V)] = asRdd(inputDir)
-    bigsRecords.saveAsHadoopFile[O](splitsDir)
+    val splitsDirO = SplitsDir(splitsDir)
+    val bigsRecords: RDD[(K, V)] = asRdd[O, I, V, K](inputDir).rdd
+    bigsRecords.saveAsHadoopFile[O](splitsDirO.getSplitsPath)
   }
 
   def writeNew[
@@ -38,8 +39,9 @@ class SplitWriter(
     inputDir: String,
     splitsDir: String
   )(implicit sc: SparkContext): Unit = {
-    val bigsRecords: RDD[(K, V)] = asRddNew(inputDir)
-    bigsRecords.saveAsNewAPIHadoopFile[O](splitsDir)
+    val splitsDirO = SplitsDir(splitsDir)
+    val bigsRecords: RDD[(K, V)] = asRddNew[O, I, V, K](inputDir).rdd
+    bigsRecords.saveAsNewAPIHadoopFile[O](splitsDirO.getSplitsPath)
   }
 
   private[inputsplitter] def asRdd[
@@ -49,7 +51,7 @@ class SplitWriter(
   K: ClassTag
   ](
     inputDir: String
-  )(implicit sc: SparkContext): RDD[(K, V)] = {
+  )(implicit sc: SparkContext): Split[K, V] = {
 
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
 
@@ -59,7 +61,8 @@ class SplitWriter(
     logger.warn("Using input: {}", inputDir)
     logger.warn("Detected splittables: {}", bigs)
 
-    sc.hadoopFile[K, V, I](bigs.toStringList())
+    val rdd = sc.hadoopFile[K, V, I](bigs.toStringList())
+    Split[K, V](rdd, bigs)
   }
 
   private[inputsplitter] def asRddNew[
@@ -69,7 +72,7 @@ class SplitWriter(
   K: ClassTag
   ](
     inputDir: String
-  )(implicit sc: SparkContext): RDD[(K, V)] = {
+  )(implicit sc: SparkContext): Split[K, V] = {
 
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
 
@@ -79,7 +82,14 @@ class SplitWriter(
     logger.warn("Using input: {}", inputDir)
     logger.warn("Detected bigs: {}", bigs)
 
-    sc.newAPIHadoopFile[K, V, I](bigs.toStringList())
+    val rdd = sc.newAPIHadoopFile[K, V, I](bigs.toStringList())
+    Split[K, V](rdd, bigs)
   }
 
 }
+
+case class Split[K, V](
+  rdd: RDD[(K, V)],
+  bigs: FileDetailsSet
+)
+

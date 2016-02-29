@@ -26,7 +26,7 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext {
 
     val splitWriter = new SplitWriter(conditionForSplitting)
 
-    val rddWithOnlyBigsRecords = splitWriter.asRddNew[O, I, K, V](input)
+    val rddWithOnlyBigsRecords = splitWriter.asRddNew[O, I, K, V](input).rdd
 
     val expectedRddWithOnlyBigFileSplit = sc.newAPIHadoopFile[K, V, I](splits)
 
