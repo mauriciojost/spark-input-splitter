@@ -5,6 +5,7 @@ import eu.pepot.eu.spark.inputsplitter.common._
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.io.Text
+import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat
 import org.scalatest.{Matchers, FunSuite}
@@ -16,8 +17,8 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
   type I = KeyValueTextInputFormat
   type O = TextOutputFormat[K, V]
 
-  val inputDir = "src/test/resources/inputs"
-  val splitsDir = "src/test/resources/splits"
+  val inputDir = resourcesBaseDir("scenario-000/input/")
+  val splitsDir = resourcesBaseDir("scenario-000/splits/")
 
   test("the split writer splits the bigs") {
 

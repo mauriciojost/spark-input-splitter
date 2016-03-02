@@ -3,6 +3,7 @@ package eu.pepot.eu.spark.inputsplitter.common
 import org.specs2.mutable._
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.conf.Configuration;
+import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
 
 class FilesListerSpec extends Specification {
 
@@ -11,7 +12,7 @@ class FilesListerSpec extends Specification {
   "FileLister" should {
 
     "list all regular files (1)" in {
-      val inputDir = "src/test/resources/inputs"
+      val inputDir = resourcesBaseDir("scenario-000/input")
 
       val inputs = FileLister.listFiles(inputDir)
 
@@ -24,7 +25,7 @@ class FilesListerSpec extends Specification {
     }
 
     "list all regular files (2)" in {
-      val inputDir = "src/test/resources/hiddeninputs"
+      val inputDir = resourcesBaseDir("hidden")
 
       val inputs = FileLister.listFiles(inputDir)
 
