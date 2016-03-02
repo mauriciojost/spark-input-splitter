@@ -30,18 +30,23 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext with Matchers {
     val bigsExpected = FilesMatcher.matches(inputExpected, conditionForSplitting)
     val smallsExpected = FilesSubstractor.substract(inputExpected, bigsExpected)
 
-
     val splitReader = new SplitReader(conditionForSplitting)
 
     val SplitDetails(rddWithWholeInput, splits, bigs, smalls) = splitReader.rdd[K, V, I, O](inputDir, splitsDir)
 
+    // Tests on inputs
+    inputExpected.files.length should be(3)
+
     // Tests on splits
+    splitsExpected.files.length should be(1)
     splits should be (Some(splitsExpected))
 
     // Tests on bigs
+    bigsExpected.files.length should be(1)
     bigs should be (Some(bigsExpected))
 
     // Tests on smalls
+    smallsExpected.files.length should be(2)
     smalls should be (Some(smallsExpected))
 
     // Tests on the RDD (whole input)
