@@ -1,7 +1,7 @@
 package eu.pepot.eu.spark.inputsplitter.examples
 
 import eu.pepot.eu.spark.inputsplitter.SplitReader
-import eu.pepot.eu.spark.inputsplitter.common.Condition
+import eu.pepot.eu.spark.inputsplitter.common.file.matcher.Condition
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat

@@ -1,4 +1,4 @@
-package eu.pepot.eu.spark.inputsplitter.common
+package eu.pepot.eu.spark.inputsplitter.common.splits
 
 import eu.pepot.eu.spark.inputsplitter.common.file.FileDetailsSet
 import org.apache.spark.rdd.RDD

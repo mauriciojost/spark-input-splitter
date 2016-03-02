@@ -1,4 +1,4 @@
-package eu.pepot.eu.spark.inputsplitter.common
+package eu.pepot.eu.spark.inputsplitter.common.file.matcher
 
 import org.apache.hadoop.fs.Path
 

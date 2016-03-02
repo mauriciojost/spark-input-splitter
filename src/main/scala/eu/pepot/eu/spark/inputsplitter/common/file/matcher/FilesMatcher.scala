@@ -1,6 +1,5 @@
 package eu.pepot.eu.spark.inputsplitter.common.file.matcher
 
-import eu.pepot.eu.spark.inputsplitter.common.Condition
 import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetails, FileDetailsSet}
 
 object FilesMatcher {

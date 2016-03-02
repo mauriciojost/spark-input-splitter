@@ -1,8 +1,9 @@
 package eu.pepot.eu.spark.inputsplitter
 
 import eu.pepot.eu.spark.inputsplitter.common._
-import eu.pepot.eu.spark.inputsplitter.common.file.matcher.FilesMatcher
+import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
 import eu.pepot.eu.spark.inputsplitter.common.file.{FilesSubstractor, FileLister, FileDetailsSet}
+import eu.pepot.eu.spark.inputsplitter.common.splits.{SplitsDir, SplitDetails}
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.{mapred, mapreduce}
 import org.apache.spark.SparkContext

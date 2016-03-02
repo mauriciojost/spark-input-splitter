@@ -1,13 +1,13 @@
 package eu.pepot.eu.spark.inputsplitter
 
 import com.holdenkarau.spark.testing.RDDComparisions
-import eu.pepot.eu.spark.inputsplitter.common._
-import eu.pepot.eu.spark.inputsplitter.common.file.matcher.FilesMatcher
-import eu.pepot.eu.spark.inputsplitter.common.file.{FilesSubstractor, FileLister}
+import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
+import eu.pepot.eu.spark.inputsplitter.common.file.{FileLister, FilesSubstractor}
+import eu.pepot.eu.spark.inputsplitter.common.splits.{SplitDetails, SplitsDir}
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
+import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.io.Text
-import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat
 import org.scalatest.{FunSuite, Matchers}

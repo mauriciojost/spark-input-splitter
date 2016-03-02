@@ -1,4 +1,4 @@
-package eu.pepot.eu.spark.inputsplitter.common
+package eu.pepot.eu.spark.inputsplitter.common.splits
 
 case class SplitsDir(
   path: String
