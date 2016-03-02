@@ -6,9 +6,9 @@ import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat
-import org.scalatest.FunSuite
+import org.scalatest.{Matchers, FunSuite}
 
-class SplitReaderSpec extends FunSuite with CustomSparkContext {
+class SplitReaderSpec extends FunSuite with CustomSparkContext with Matchers {
 
   type K = Text
   type V = Text
@@ -30,10 +30,10 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext {
 
     val expected = sc.newAPIHadoopFile[K, V, I](input)
 
-    assert(expected.count() == 9)
-    assert(rddWithWholeInput.count() == 9)
-    assert(expected.count() == rddWithWholeInput.count())
-    assert(None === RDDComparisions.compare(expected, rddWithWholeInput))
+    expected.count() should be (9)
+    rddWithWholeInput.count() should be (9)
+    expected.count() should be (rddWithWholeInput.count())
+    RDDComparisions.compare(expected, rddWithWholeInput) should be (None)
     // TODO complete tests taking into account SplitDetails
   }
 

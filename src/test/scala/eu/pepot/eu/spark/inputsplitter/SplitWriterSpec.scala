@@ -6,9 +6,9 @@ import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat
-import org.scalatest.FunSuite
+import org.scalatest.{Matchers, FunSuite}
 
-class SplitWriterSpec extends FunSuite with CustomSparkContext {
+class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
 
   type K = Text
   type V = Text
@@ -30,10 +30,10 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext {
 
     val expectedRddWithOnlyBigFileSplit = sc.newAPIHadoopFile[K, V, I](splits)
 
-    assert(expectedRddWithOnlyBigFileSplit.count() == 5)
-    assert(rddWithOnlyBigsRecords.count() == 5)
-    assert(expectedRddWithOnlyBigFileSplit.count() == rddWithOnlyBigsRecords.count())
-    assert(None === RDDComparisions.compare(expectedRddWithOnlyBigFileSplit, rddWithOnlyBigsRecords))
+    expectedRddWithOnlyBigFileSplit.count() should be (5)
+    rddWithOnlyBigsRecords.count() should be (5)
+    expectedRddWithOnlyBigFileSplit.count() should be (rddWithOnlyBigsRecords.count())
+    RDDComparisions.compare(expectedRddWithOnlyBigFileSplit, rddWithOnlyBigsRecords) should be (None)
   }
 
 }
