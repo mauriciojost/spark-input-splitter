@@ -50,7 +50,7 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
     smallsExpected.files.length should be(2)
     smalls should be (Some(smallsExpected))
 
-    val expectedRddWithOnlyBigFileSplit = sc.newAPIHadoopFile[K, V, I](splitsDir)
+    val expectedRddWithOnlyBigFileSplit = sc.newAPIHadoopFile[K, V, I](SplitsDir(splitsDir).getDataPath)
     expectedRddWithOnlyBigFileSplit.count() should be (5)
 
     rddWithOnlyBigsRecords.count() should be (5)

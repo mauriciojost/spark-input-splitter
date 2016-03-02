@@ -26,7 +26,7 @@ class SplitWriter(
   )(implicit sc: SparkContext): Unit = {
     val splitsDirO = SplitsDir(splitsDir)
     val bigsRecords: RDD[(K, V)] = asRdd[K, V, I, O](inputDir).rdd
-    bigsRecords.saveAsHadoopFile[O](splitsDirO.getSplitsPath)
+    bigsRecords.saveAsHadoopFile[O](splitsDirO.getDataPath)
   }
 
   def writeNewAPI[
@@ -40,7 +40,7 @@ class SplitWriter(
   )(implicit sc: SparkContext): Unit = {
     val splitsDirO = SplitsDir(splitsDir)
     val bigsRecords: RDD[(K, V)] = asRddNew[K, V, I, O](inputDir).rdd
-    bigsRecords.saveAsNewAPIHadoopFile[O](splitsDirO.getSplitsPath)
+    bigsRecords.saveAsNewAPIHadoopFile[O](splitsDirO.getDataPath)
   }
 
   private[inputsplitter] def asRdd[

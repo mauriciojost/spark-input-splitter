@@ -23,19 +23,20 @@ class SplitReader(
     inputDir: String,
     splitsDir: String
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
-    val (splits, smalls, bigs) = determineSplitsSmallsBigs(inputDir, splitsDir)
+    val splitsDirO = SplitsDir(splitsDir)
+    val (splits, smalls, bigs) = determineSplitsSmallsBigs(inputDir, splitsDirO)
     val rdd = sc.newAPIHadoopFile[K, V, I](smalls.toStringListWith(splits))
     SplitDetails[K, V](rdd, Some(splits), Some(bigs), Some(smalls))
   }
 
   private[inputsplitter] def determineSplitsSmallsBigs(
     inputDir: String,
-    splitsDir: String
+    splitsDir: SplitsDir
   )(implicit sc: SparkContext): (FileDetailsSet, FileDetailsSet, FileDetailsSet) = {
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
     val input = FileLister.listFiles(inputDir)
     val bigs = FilesMatcher.matches(input, condition)
-    val splits = FileLister.listFiles(splitsDir)
+    val splits = FileLister.listFiles(splitsDir.getDataPath)
     val smalls = FilesSubstractor.substract(input, bigs)
     (splits, smalls, bigs)
   }
