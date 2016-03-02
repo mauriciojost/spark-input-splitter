@@ -29,7 +29,7 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
     val conditionForSplitting = Condition(biggerThan = Some(50)) // only big.txt is bigger than this
 
     val inputExpected = FileLister.listFiles(inputDir)(FileSystem.get(scc.hadoopConfiguration))
-    val splitsExpected = FileLister.listFiles(splitsDir)(FileSystem.get(scc.hadoopConfiguration))
+    val splitsExpected = FileLister.listFiles(SplitsDir(splitsDir).getDataPath)(FileSystem.get(scc.hadoopConfiguration))
     val bigsExpected = FilesMatcher.matches(inputExpected, conditionForSplitting)
     val smallsExpected = FilesSubstractor.substract(inputExpected, bigsExpected)
 
