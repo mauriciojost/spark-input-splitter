@@ -9,7 +9,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 object ExampleSplitRead {
 
-  val input = "src/test/resources/files"
+  val input = "src/test/resources/eu/pepot/eu/spark/inputsplitter/samples/scenario-000/input"
   val splits = "data/splits"
   val output = "data/ouptut"
 
