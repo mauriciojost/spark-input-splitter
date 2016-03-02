@@ -20,7 +20,7 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext with Matchers {
   val inputDir = resourcesBaseDir("scenario-000/input/")
   val splitsDir = resourcesBaseDir("scenario-000/splits/")
 
-  test("the split reader reads correctly the merge of split and smalls") {
+  test("the split reader reads correctly the merge of split and smalls (scenario-000)") {
 
     implicit val scc = sc
 

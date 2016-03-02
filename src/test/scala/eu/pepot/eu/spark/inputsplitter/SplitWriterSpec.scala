@@ -20,7 +20,7 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
   val inputDir = resourcesBaseDir("scenario-000/input/")
   val splitsDir = resourcesBaseDir("scenario-000/splits/")
 
-  test("the split writer splits the bigs") {
+  test("the split writer splits the bigs (scenario-000)") {
 
     implicit val scc = sc
 
