@@ -51,9 +51,9 @@ class SplitWriter(
   ](
     inputDir: String
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
-    val bigs = determineBigs[K, V](inputDir)(sc)
+    val (bigs, smalls) = determineBigsSmalls[K, V](inputDir)(sc)
     val rdd = sc.hadoopFile[K, V, I](bigs.toStringList())
-    SplitDetails[K, V](rdd, None, Some(bigs), None)
+    SplitDetails[K, V](rdd, None, Some(bigs), Some(smalls))
   }
 
   private[inputsplitter] def asRddNew[
@@ -64,23 +64,25 @@ class SplitWriter(
   ](
     inputDir: String
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
-    val bigs = determineBigs[K, V](inputDir)(sc)
+    val (bigs, smalls) = determineBigsSmalls[K, V](inputDir)(sc)
     val rdd = sc.newAPIHadoopFile[K, V, I](bigs.toStringList())
-    SplitDetails[K, V](rdd, None, Some(bigs), None)
+    SplitDetails[K, V](rdd, None, Some(bigs), Some(smalls))
   }
 
-  private def determineBigs[
+  private def determineBigsSmalls[
   K: ClassTag,
   V: ClassTag
   ](
     inputDir: String
-  )(sc: SparkContext): FileDetailsSet = {
+  )(sc: SparkContext): (FileDetailsSet, FileDetailsSet) = {
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
     val input = FileLister.listFiles(inputDir)
     logger.warn("Using input: {}", inputDir)
     val bigs = FilesMatcher.matches(input, condition)
-    logger.warn("Detected bigs: {}", bigs)
-    bigs
+    logger.warn("Detected bigs from input: {}", bigs)
+    val smalls = FilesSubstractor.substract(input, bigs)
+    logger.warn("Detected smalls from input: {}", smalls)
+    (bigs, smalls)
   }
 
 }
