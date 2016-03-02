@@ -1,10 +1,10 @@
-package eu.pepot.eu.spark.inputsplitter.common
+package eu.pepot.eu.spark.inputsplitter.common.file.matcher
 
-import java.io.{FileNotFoundException, File}
+import java.io.{File, FileNotFoundException}
 
-import org.specs2.mutable._
+import eu.pepot.eu.spark.inputsplitter.common.Condition
+import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetails, FileDetailsSet}
 import org.apache.hadoop.fs.Path
-import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
 
 class FilesMatcherSpec extends Specification {
 

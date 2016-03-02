@@ -1,4 +1,4 @@
-package eu.pepot.eu.spark.inputsplitter.common
+package eu.pepot.eu.spark.inputsplitter.common.spark
 
 import org.apache.hadoop.mapreduce.InputFormat
 import org.apache.hadoop.mapreduce.lib.input.FileSplit

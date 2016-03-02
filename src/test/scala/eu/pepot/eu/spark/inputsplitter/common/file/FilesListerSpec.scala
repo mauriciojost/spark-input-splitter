@@ -1,9 +1,9 @@
-package eu.pepot.eu.spark.inputsplitter.common
+package eu.pepot.eu.spark.inputsplitter.common.file
 
-import org.specs2.mutable._
-import org.apache.hadoop.fs.FileSystem
-import org.apache.hadoop.conf.Configuration;
 import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs.FileSystem
+import org.specs2.mutable._
 
 class FilesListerSpec extends Specification {
 

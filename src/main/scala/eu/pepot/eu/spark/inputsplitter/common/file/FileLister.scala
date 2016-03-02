@@ -1,6 +1,7 @@
-package eu.pepot.eu.spark.inputsplitter.common
+package eu.pepot.eu.spark.inputsplitter.common.file
 
 import org.apache.hadoop.fs.{FileSystem, Path}
+
 import scala.collection.mutable
 
 object FileLister {

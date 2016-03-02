@@ -1,6 +1,8 @@
 package eu.pepot.eu.spark.inputsplitter
 
 import eu.pepot.eu.spark.inputsplitter.common._
+import eu.pepot.eu.spark.inputsplitter.common.file.matcher.FilesMatcher
+import eu.pepot.eu.spark.inputsplitter.common.file.{FilesSubstractor, FileLister, FileDetailsSet}
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.{mapred, mapreduce}
 import org.apache.spark.SparkContext
@@ -25,8 +27,9 @@ class SplitWriter(
     splitsDir: String
   )(implicit sc: SparkContext): Unit = {
     val splitsDirO = SplitsDir(splitsDir)
-    val bigsRecords: RDD[(K, V)] = asRdd[K, V, I, O](inputDir).rdd
-    bigsRecords.saveAsHadoopFile[O](splitsDirO.getDataPath)
+    val splitDetails = asRdd[K, V, I, O](inputDir)
+    splitDetails.rdd.saveAsHadoopFile[O](splitsDirO.getDataPath)
+    Metadata.save(splitDetails, splitsDirO)
   }
 
   def writeNewAPI[
@@ -85,5 +88,11 @@ class SplitWriter(
     (bigs, smalls)
   }
 
+}
+
+object Metadata {
+  def save[K: ClassTag, V: ClassTag](splitDetails: SplitDetails[K, V], splitsDirO: SplitsDir): Unit = {
+
+  }
 }
 

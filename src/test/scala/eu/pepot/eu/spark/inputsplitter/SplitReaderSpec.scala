@@ -2,6 +2,8 @@ package eu.pepot.eu.spark.inputsplitter
 
 import com.holdenkarau.spark.testing.RDDComparisions
 import eu.pepot.eu.spark.inputsplitter.common._
+import eu.pepot.eu.spark.inputsplitter.common.file.matcher.FilesMatcher
+import eu.pepot.eu.spark.inputsplitter.common.file.{FilesSubstractor, FileLister}
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.io.Text

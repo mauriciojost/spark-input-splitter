@@ -1,5 +1,6 @@
 package eu.pepot.eu.spark.inputsplitter.common
 
+import eu.pepot.eu.spark.inputsplitter.common.file.FileDetailsSet
 import org.apache.spark.rdd.RDD
 
 case class SplitDetails[K, V](
