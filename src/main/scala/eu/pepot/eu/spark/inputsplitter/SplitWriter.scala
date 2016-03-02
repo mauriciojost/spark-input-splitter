@@ -25,7 +25,7 @@ class SplitWriter(
     splitsDir: String
   )(implicit sc: SparkContext): Unit = {
     val splitsDirO = SplitsDir(splitsDir)
-    val bigsRecords: RDD[(K, V)] = asRdd[O, I, V, K](inputDir).rdd
+    val bigsRecords: RDD[(K, V)] = asRdd[K, V, I, O](inputDir).rdd
     bigsRecords.saveAsHadoopFile[O](splitsDirO.getSplitsPath)
   }
 
@@ -39,15 +39,15 @@ class SplitWriter(
     splitsDir: String
   )(implicit sc: SparkContext): Unit = {
     val splitsDirO = SplitsDir(splitsDir)
-    val bigsRecords: RDD[(K, V)] = asRddNew[O, I, V, K](inputDir).rdd
+    val bigsRecords: RDD[(K, V)] = asRddNew[K, V, I, O](inputDir).rdd
     bigsRecords.saveAsNewAPIHadoopFile[O](splitsDirO.getSplitsPath)
   }
 
   private[inputsplitter] def asRdd[
-  O <: mapred.OutputFormat[K, V] : ClassTag,
-  I <: mapred.InputFormat[K, V] : ClassTag,
+  K: ClassTag,
   V: ClassTag,
-  K: ClassTag
+  I <: mapred.InputFormat[K, V] : ClassTag,
+  O <: mapred.OutputFormat[K, V] : ClassTag
   ](
     inputDir: String
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
@@ -57,10 +57,10 @@ class SplitWriter(
   }
 
   private[inputsplitter] def asRddNew[
-  O <: mapreduce.OutputFormat[K, V] : ClassTag,
-  I <: mapreduce.InputFormat[K, V] : ClassTag,
+  K: ClassTag,
   V: ClassTag,
-  K: ClassTag
+  I <: mapreduce.InputFormat[K, V] : ClassTag,
+  O <: mapreduce.OutputFormat[K, V] : ClassTag
   ](
     inputDir: String
   )(implicit sc: SparkContext): SplitDetails[K, V] = {

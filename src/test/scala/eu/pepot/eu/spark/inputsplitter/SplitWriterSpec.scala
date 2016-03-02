@@ -32,7 +32,7 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
 
     val splitWriter = new SplitWriter(conditionForSplitting)
 
-    val SplitDetails(rddWithOnlyBigsRecords, splits, bigs, smalls) = splitWriter.asRddNew[O, I, V, K](inputDir)
+    val SplitDetails(rddWithOnlyBigsRecords, splits, bigs, smalls) = splitWriter.asRddNew[K, V, I, O](inputDir)
 
     // Tests on inputs
     inputExpected.files.length should be(3)
