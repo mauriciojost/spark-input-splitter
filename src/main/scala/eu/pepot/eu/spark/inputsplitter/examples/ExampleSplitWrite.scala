@@ -9,7 +9,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 object ExampleSplitWrite {
 
-  val input = "src/test/resources/inputs"
+  val input = "src/test/resources/eu/pepot/eu/spark/inputsplitter/samples/scenario-000/input"
   val splits = "data/splits"
 
   def main(args: Array[String]) {
