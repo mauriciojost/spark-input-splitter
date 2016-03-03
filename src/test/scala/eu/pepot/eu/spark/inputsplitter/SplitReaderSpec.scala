@@ -3,7 +3,7 @@ package eu.pepot.eu.spark.inputsplitter
 import com.holdenkarau.spark.testing.RDDComparisions
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
 import eu.pepot.eu.spark.inputsplitter.common.file.{FileLister, FilesSubstractor}
-import eu.pepot.eu.spark.inputsplitter.common.splits.{SplitDetails, SplitsDir}
+import eu.pepot.eu.spark.inputsplitter.common.splits.{Metadata, SplitDetails, SplitsDir}
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
 import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
 import org.apache.hadoop.fs.FileSystem
@@ -35,7 +35,7 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext with Matchers {
 
     val splitReader = new SplitReader(conditionForSplitting)
 
-    val SplitDetails(rddWithWholeInput, splits, bigs, smalls) = splitReader.rdd[K, V, I, O](inputDir, splitsDir)
+    val SplitDetails(rddWithWholeInput, Metadata(splits, bigs, smalls)) = splitReader.rdd[K, V, I, O](inputDir, splitsDir)
 
     // Tests on inputs
     inputExpected.files.length should be(3)

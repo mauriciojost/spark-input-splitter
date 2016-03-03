@@ -40,9 +40,9 @@ class FilesMatcherSpec extends Specification {
       val bigFile = fileDetails(resourcesBaseDir("scenario-000/input/big.txt"))
       val files = FileDetailsSet(Seq(bigFile, smallFile))
 
-      val FileDetailsSet(matches) = FilesMatcher.matches(files, Condition(pathCondition = Some((p: Path) => p.isAbsolute)))
+      val FileDetailsSet(matches) = FilesMatcher.matches(files, Condition(pathCondition = Some((p: Path) => p.getName().contains("big"))))
 
-      matches.size mustEqual 0
+      matches.size mustEqual 1
     }
 
   }

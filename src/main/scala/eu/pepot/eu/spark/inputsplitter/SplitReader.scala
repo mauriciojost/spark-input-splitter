@@ -1,9 +1,8 @@
 package eu.pepot.eu.spark.inputsplitter
 
-import eu.pepot.eu.spark.inputsplitter.common._
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
-import eu.pepot.eu.spark.inputsplitter.common.file.{FilesSubstractor, FileLister, FileDetailsSet}
-import eu.pepot.eu.spark.inputsplitter.common.splits.{SplitsDir, SplitDetails}
+import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSet, FileLister, FilesSubstractor}
+import eu.pepot.eu.spark.inputsplitter.common.splits.{Metadata, SplitDetails, SplitsDir}
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.mapreduce.{InputFormat, OutputFormat}
 import org.apache.spark.SparkContext
@@ -29,7 +28,7 @@ class SplitReader(
     val splitsDirO = SplitsDir(splitsDir)
     val (splits, smalls, bigs) = determineSplitsSmallsBigs(inputDir, splitsDirO)
     val rdd = sc.newAPIHadoopFile[K, V, I](smalls.toStringListWith(splits))
-    SplitDetails[K, V](rdd, Some(splits), Some(bigs), Some(smalls))
+    SplitDetails[K, V](rdd, Metadata(Some(splits), Some(bigs), Some(smalls)))
   }
 
   private[inputsplitter] def determineSplitsSmallsBigs(
