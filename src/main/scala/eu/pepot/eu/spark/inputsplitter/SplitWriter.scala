@@ -29,7 +29,7 @@ class SplitWriter(
     val splitDetails = asRdd[K, V, I, O](inputDir)
     splitDetails.rdd.saveAsHadoopFile[O](splitsDirO.getDataPath)
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
-    Metadata.save(splitDetails.metadata, splitsDirO)
+    Metadata.dump(splitDetails.metadata, splitsDirO)
   }
 
   def writeNewAPI[
@@ -45,7 +45,7 @@ class SplitWriter(
     val splitDetails = asRddNew[K, V, I, O](inputDir)
     splitDetails.rdd.saveAsNewAPIHadoopFile[O](splitsDirO.getDataPath)
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
-    Metadata.save(splitDetails.metadata, splitsDirO)
+    Metadata.dump(splitDetails.metadata, splitsDirO)
   }
 
   private[inputsplitter] def asRdd[
