@@ -28,7 +28,7 @@ class SplitReader(
     val splitsDirO = SplitsDir(splitsDir)
     val (splits, smalls, bigs) = determineSplitsSmallsBigs(inputDir, splitsDirO)
     val rdd = sc.newAPIHadoopFile[K, V, I](smalls.toStringListWith(splits))
-    SplitDetails[K, V](rdd, Metadata(Some(splits), Some(bigs), Some(smalls)))
+    SplitDetails[K, V](rdd, Metadata(splits, bigs, smalls))
   }
 
   private[inputsplitter] def determineSplitsSmallsBigs(
