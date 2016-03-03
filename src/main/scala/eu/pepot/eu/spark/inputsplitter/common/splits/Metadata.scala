@@ -24,7 +24,7 @@ object Metadata {
     var fsDataInputStream: FSDataInputStream = null
     try {
       fsDataInputStream = fs.open(splitsMappingFile)
-      val metadataContent = scala.io.Source.fromInputStream(fsDataInputStream).getLines().mkString("\n")
+      val metadataContent = scala.io.Source.fromInputStream(fsDataInputStream).getLines().mkString(LINE_SEPARATOR)
       deserialize(metadataContent.getBytes())
     } finally {
       if (fsDataInputStream != null) {
