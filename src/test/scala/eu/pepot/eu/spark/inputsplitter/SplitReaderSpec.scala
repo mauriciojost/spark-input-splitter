@@ -42,15 +42,15 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext with Matchers {
 
     // Tests on splits
     splitsExpected.files.length should be(1)
-    splits should be (Some(splitsExpected))
+    splits should be (splitsExpected)
 
     // Tests on bigs
     bigsExpected.files.length should be(1)
-    bigs should be (Some(bigsExpected))
+    bigs should be (bigsExpected)
 
     // Tests on smalls
     smallsExpected.files.length should be(2)
-    smalls should be (Some(smallsExpected))
+    smalls should be (smallsExpected)
 
     // Tests on the RDD (whole input)
     val expectedRdd = sc.newAPIHadoopFile[K, V, I](inputDir)

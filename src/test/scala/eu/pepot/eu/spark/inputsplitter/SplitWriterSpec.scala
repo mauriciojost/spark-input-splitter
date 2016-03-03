@@ -2,7 +2,7 @@ package eu.pepot.eu.spark.inputsplitter
 
 import com.holdenkarau.spark.testing.RDDComparisions
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
-import eu.pepot.eu.spark.inputsplitter.common.file.{FileLister, FilesSubstractor}
+import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSet, FileLister, FilesSubstractor}
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Metadata, SplitDetails, SplitsDir}
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
 import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
@@ -42,15 +42,15 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
 
     // Tests on splits
     splitsExpected.files.length should be(1)
-    splits should be(None)
+    splits should be(FileDetailsSet(Nil))
 
     // Tests on bigs
     bigsExpected.files.length should be(1)
-    bigs should be (Some(bigsExpected))
+    bigs should be (bigsExpected)
 
     // Tests on smalls
     smallsExpected.files.length should be(2)
-    smalls should be (Some(smallsExpected))
+    smalls should be (smallsExpected)
 
     val expectedRddWithOnlyBigFileSplit = sc.newAPIHadoopFile[K, V, I](SplitsDir(splitsDir).getDataPath)
     expectedRddWithOnlyBigFileSplit.count() should be (5)
