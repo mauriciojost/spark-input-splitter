@@ -1,5 +1,7 @@
 package eu.pepot.eu.spark.inputsplitter.common.file
 
+import java.io.FileNotFoundException
+
 import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.FileSystem
@@ -34,6 +36,11 @@ class FilesListerSpec extends Specification {
           "_SUCCESS",
           "part-r-00000"
         )
+    }
+
+    "throw exception if bad path" in {
+      val inputDir = resourcesBaseDir("scenario-000/input-inexistent")
+      FileLister.listFiles(inputDir) must throwAn[FileNotFoundException]
     }
 
   }
