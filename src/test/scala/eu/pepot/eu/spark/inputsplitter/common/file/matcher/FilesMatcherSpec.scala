@@ -19,8 +19,7 @@ class FilesMatcherSpec extends Specification {
       val FileDetailsSet(matches) = FilesMatcher.matches(files, Condition(biggerThan = Some(50)))
 
       matches.size mustEqual 1
-      matches.head.size mustEqual bigFile.size
-      matches.head.path mustEqual bigFile.path
+      matches.head mustEqual bigFile
     }
 
     "match files based on their name" in {
@@ -31,8 +30,7 @@ class FilesMatcherSpec extends Specification {
       val FileDetailsSet(matches) = FilesMatcher.matches(files, Condition(namePattern = Some(".*all.*")))
 
       matches.size mustEqual 1
-      matches.head.size mustEqual smallFile.size
-      matches.head.path mustEqual smallFile.path
+      matches.head mustEqual smallFile
     }
 
     "match files based on a given path condition" in {
@@ -43,6 +41,7 @@ class FilesMatcherSpec extends Specification {
       val FileDetailsSet(matches) = FilesMatcher.matches(files, Condition(pathCondition = Some((p: Path) => p.getName().contains("big"))))
 
       matches.size mustEqual 1
+      matches.head mustEqual bigFile
     }
 
   }
