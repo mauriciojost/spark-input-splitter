@@ -2,7 +2,7 @@ package eu.pepot.eu.spark.inputsplitter
 
 import com.holdenkarau.spark.testing.RDDComparisions
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
-import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSet, FileLister, FilesSubstractor}
+import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSet, FileLister, FileDetailsSetSubstractor}
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Metadata, SplitDetails, SplitsDir}
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
 import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
@@ -31,7 +31,7 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
     val inputExpected = FileLister.listFiles(inputDir)(FileSystem.get(scc.hadoopConfiguration))
     val splitsExpected = FileLister.listFiles(SplitsDir(splitsDir).getDataPath)(FileSystem.get(scc.hadoopConfiguration))
     val bigsExpected = FilesMatcher.matches(inputExpected, conditionForSplitting)
-    val smallsExpected = FilesSubstractor.substract(inputExpected, bigsExpected)
+    val smallsExpected = FileDetailsSetSubstractor.substract(inputExpected, bigsExpected)
 
     val splitWriter = new SplitWriter(conditionForSplitting)
 

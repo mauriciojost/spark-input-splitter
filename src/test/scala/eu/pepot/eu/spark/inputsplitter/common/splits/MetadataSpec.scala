@@ -1,14 +1,12 @@
 package eu.pepot.eu.spark.inputsplitter.common.splits
 
-import java.io.File
-
 import com.google.common.io.Files
-import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetails, FileDetailsSet}
+import eu.pepot.eu.spark.inputsplitter.common.file.FileDetailsSet
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
-import org.apache.commons.io.FileUtils
-import org.apache.hadoop.fs.{Path, FileSystem}
-import org.scalatest.{FunSuite, Matchers}
 import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
+import org.apache.commons.io.FileUtils
+import org.apache.hadoop.fs.FileSystem
+import org.scalatest.{FunSuite, Matchers}
 
 class MetadataSpec extends FunSuite with CustomSparkContext with Matchers {
 
@@ -16,8 +14,6 @@ class MetadataSpec extends FunSuite with CustomSparkContext with Matchers {
   val small1 = resourcesBaseDir("scenario-000/input/small1.txt")
   val small2 = resourcesBaseDir("scenario-000/input/small2.txt")
   val split = resourcesBaseDir("scenario-000/splits/data/part-r-00000")
-
-  def toFileDetails(s: String) = FileDetails(new Path(s), new File(s).length())
 
   test("the metadata should be serialized and deserialized correctly") {
 
@@ -32,13 +28,13 @@ class MetadataSpec extends FunSuite with CustomSparkContext with Matchers {
       ),
       Metadata(
         splits = FileDetailsSet(Nil),
-        bigs = FileDetailsSet(List(toFileDetails(big))),
-        smalls = FileDetailsSet(List(toFileDetails(small1)))
+        bigs = FileDetailsSet(List(toFDs(big))),
+        smalls = FileDetailsSet(List(toFDs(small1)))
       ),
       Metadata(
-        splits = FileDetailsSet(List(toFileDetails(split))),
-        bigs = FileDetailsSet(List(toFileDetails(big))),
-        smalls = FileDetailsSet(List(toFileDetails(small1), toFileDetails(small2)))
+        splits = FileDetailsSet(List(toFDs(split))),
+        bigs = FileDetailsSet(List(toFDs(big))),
+        smalls = FileDetailsSet(List(toFDs(small1), toFDs(small2)))
       )
     )
 
@@ -60,14 +56,14 @@ class MetadataSpec extends FunSuite with CustomSparkContext with Matchers {
     implicit val fs = FileSystem.get(scc.hadoopConfiguration)
 
     val mdLoaded = Metadata(
-      splits = FileDetailsSet(List(toFileDetails(split))),
-      bigs = FileDetailsSet(List(toFileDetails(big))),
-      smalls = FileDetailsSet(List(toFileDetails(small1), toFileDetails(small2)))
+      splits = FileDetailsSet(List(toFDs(split))),
+      bigs = FileDetailsSet(List(toFDs(big))),
+      smalls = FileDetailsSet(List(toFDs(small1), toFDs(small2)))
     )
     val mdDiscovered = Metadata(
       splits = FileDetailsSet(Nil),
-      bigs = FileDetailsSet(List(toFileDetails(big))),
-      smalls = FileDetailsSet(List(toFileDetails(small1)))
+      bigs = FileDetailsSet(List(toFDs(big))),
+      smalls = FileDetailsSet(List(toFDs(small1)))
     )
 
     val mdResolved = Metadata.resolve(mdLoaded, mdDiscovered)

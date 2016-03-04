@@ -1,7 +1,7 @@
 package eu.pepot.eu.spark.inputsplitter
 
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
-import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSet, FileLister, FilesSubstractor}
+import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSet, FileLister, FileDetailsSetSubstractor}
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Metadata, SplitDetails, SplitsDir}
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.{mapred, mapreduce}
@@ -85,7 +85,7 @@ class SplitWriter(
     logger.warn("Using input: {}", inputDir)
     val bigs = FilesMatcher.matches(input, condition)
     logger.warn("Detected bigs from input: {}", bigs)
-    val smalls = FilesSubstractor.substract(input, bigs)
+    val smalls = FileDetailsSetSubstractor.substract(input, bigs)
     logger.warn("Detected smalls from input: {}", smalls)
     (bigs, smalls)
   }
