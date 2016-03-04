@@ -1,7 +1,7 @@
 package eu.pepot.eu.spark.inputsplitter.common.file
 
 case class FileDetailsSet(
-  files: Seq[FileDetails]
+  files: Set[FileDetails]
 ) {
 
   def toStringList() = files.map(_.path).mkString(",")

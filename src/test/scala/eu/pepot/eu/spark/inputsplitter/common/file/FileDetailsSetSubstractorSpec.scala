@@ -16,36 +16,36 @@ class FileDetailsSetSubstractorSpec extends Specification {
   "FileDetailsSetSubstractorSpec" should {
 
     "get empty set from identical sets" in {
-      val base = FileDetailsSet(Seq(toFDs(big), toFDs(small1)))
-      val subs = FileDetailsSet(Seq(toFDs(big), toFDs(small1)))
+      val base = FileDetailsSet(Set(toFDs(big), toFDs(small1)))
+      val subs = FileDetailsSet(Set(toFDs(big), toFDs(small1)))
       val diff = FileDetailsSetSubstractor.substract(base, subs)
-      diff shouldEqual(FileDetailsSet(Nil))
+      diff shouldEqual(FileDetailsSet(Set()))
     }
 
     "get empty set from identical sets in different order" in {
-      val base = FileDetailsSet(Seq(toFDs(big), toFDs(small1)))
-      val subs = FileDetailsSet(Seq(toFDs(small1), toFDs(big)))
+      val base = FileDetailsSet(Set(toFDs(big), toFDs(small1)))
+      val subs = FileDetailsSet(Set(toFDs(small1), toFDs(big)))
       val diff = FileDetailsSetSubstractor.substract(base, subs)
-      diff shouldEqual(FileDetailsSet(Nil))
+      diff shouldEqual(FileDetailsSet(Set()))
     }
 
     "get non empty set from identical sets (except for absolute paths being used in one)" in {
-      val base = FileDetailsSet(Seq(toFDs(big), toFDs(small2)))
-      val subs = FileDetailsSet(Seq(toFDs(big), toFDs(small2Abs)))
+      val base = FileDetailsSet(Set(toFDs(big), toFDs(small2)))
+      val subs = FileDetailsSet(Set(toFDs(big), toFDs(small2Abs)))
       val diff = FileDetailsSetSubstractor.substract(base, subs)
       diff.files.size shouldEqual(1)
     }
 
     "get difference element when name changes" in {
-      val base = FileDetailsSet(Seq(FileDetails(new Path("a"), 10)))
-      val subs = FileDetailsSet(Seq(FileDetails(new Path("b"), 10)))
+      val base = FileDetailsSet(Set(FileDetails(new Path("a"), 10)))
+      val subs = FileDetailsSet(Set(FileDetails(new Path("b"), 10)))
       val diff = FileDetailsSetSubstractor.substract(base, subs)
       diff.files.size shouldEqual(1)
     }
 
     "get difference element when size changes" in {
-      val base = FileDetailsSet(Seq(FileDetails(new Path("a"), 10)))
-      val subs = FileDetailsSet(Seq(FileDetails(new Path("a"), 20)))
+      val base = FileDetailsSet(Set(FileDetails(new Path("a"), 10)))
+      val subs = FileDetailsSet(Set(FileDetails(new Path("a"), 20)))
       val diff = FileDetailsSetSubstractor.substract(base, subs)
       diff.files.size shouldEqual(1)
     }

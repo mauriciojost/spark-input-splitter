@@ -14,7 +14,7 @@ class FilesMatcherSpec extends Specification {
     "match files based on their size" in {
       val smallFile = fileDetails(resourcesBaseDir("scenario-000/input/small1.txt"))
       val bigFile = fileDetails(resourcesBaseDir("scenario-000/input/big.txt"))
-      val files = FileDetailsSet(Seq(bigFile, smallFile))
+      val files = FileDetailsSet(Set(bigFile, smallFile))
 
       val FileDetailsSet(matches) = FilesMatcher.matches(files, Condition(biggerThan = Some(50)))
 
@@ -25,7 +25,7 @@ class FilesMatcherSpec extends Specification {
     "match files based on their name" in {
       val smallFile = fileDetails(resourcesBaseDir("scenario-000/input/small1.txt"))
       val bigFile = fileDetails(resourcesBaseDir("scenario-000/input/big.txt"))
-      val files = FileDetailsSet(Seq(bigFile, smallFile))
+      val files = FileDetailsSet(Set(bigFile, smallFile))
 
       val FileDetailsSet(matches) = FilesMatcher.matches(files, Condition(namePattern = Some(".*all.*")))
 
@@ -36,7 +36,7 @@ class FilesMatcherSpec extends Specification {
     "match files based on a given path condition" in {
       val smallFile = fileDetails(resourcesBaseDir("scenario-000/input/small1.txt"))
       val bigFile = fileDetails(resourcesBaseDir("scenario-000/input/big.txt"))
-      val files = FileDetailsSet(Seq(bigFile, smallFile))
+      val files = FileDetailsSet(Set(bigFile, smallFile))
 
       val FileDetailsSet(matches) = FilesMatcher.matches(files, Condition(pathCondition = Some((p: Path) => p.getName().contains("big"))))
 

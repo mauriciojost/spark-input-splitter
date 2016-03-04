@@ -16,7 +16,7 @@ object FileLister {
     }
 
     FileDetailsSet(
-      files = files.toSeq
+      files = files.toSet
     )
   }
 

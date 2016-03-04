@@ -22,19 +22,19 @@ class MetadataSpec extends FunSuite with CustomSparkContext with Matchers {
 
     val mds = List(
       Metadata(
-        splits = FileDetailsSet(Nil),
-        bigs = FileDetailsSet(Nil),
-        smalls = FileDetailsSet(Nil)
+        splits = FileDetailsSet(Set()),
+        bigs = FileDetailsSet(Set()),
+        smalls = FileDetailsSet(Set())
       ),
       Metadata(
-        splits = FileDetailsSet(Nil),
-        bigs = FileDetailsSet(List(toFDs(big))),
-        smalls = FileDetailsSet(List(toFDs(small1)))
+        splits = FileDetailsSet(Set()),
+        bigs = FileDetailsSet(Set(toFDs(big))),
+        smalls = FileDetailsSet(Set(toFDs(small1)))
       ),
       Metadata(
-        splits = FileDetailsSet(List(toFDs(split))),
-        bigs = FileDetailsSet(List(toFDs(big))),
-        smalls = FileDetailsSet(List(toFDs(small1), toFDs(small2)))
+        splits = FileDetailsSet(Set(toFDs(split))),
+        bigs = FileDetailsSet(Set(toFDs(big))),
+        smalls = FileDetailsSet(Set(toFDs(small1), toFDs(small2)))
       )
     )
 
@@ -56,14 +56,14 @@ class MetadataSpec extends FunSuite with CustomSparkContext with Matchers {
     implicit val fs = FileSystem.get(scc.hadoopConfiguration)
 
     val mdLoaded = Metadata(
-      splits = FileDetailsSet(List(toFDs(split))),
-      bigs = FileDetailsSet(List(toFDs(big))),
-      smalls = FileDetailsSet(List(toFDs(small1), toFDs(small2)))
+      splits = FileDetailsSet(Set(toFDs(split))),
+      bigs = FileDetailsSet(Set(toFDs(big))),
+      smalls = FileDetailsSet(Set(toFDs(small1), toFDs(small2)))
     )
     val mdDiscovered = Metadata(
-      splits = FileDetailsSet(Nil),
-      bigs = FileDetailsSet(List(toFDs(big))),
-      smalls = FileDetailsSet(List(toFDs(small1)))
+      splits = FileDetailsSet(Set()),
+      bigs = FileDetailsSet(Set(toFDs(big))),
+      smalls = FileDetailsSet(Set(toFDs(small1)))
     )
 
     val mdResolved = Metadata.resolve(mdLoaded, mdDiscovered)

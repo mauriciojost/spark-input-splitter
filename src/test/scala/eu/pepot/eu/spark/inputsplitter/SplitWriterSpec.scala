@@ -38,18 +38,18 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
     val SplitDetails(rddWithOnlyBigsRecords, Metadata(splits, bigs, smalls)) = splitWriter.asRddNew[K, V, I, O](inputDir)
 
     // Tests on inputs
-    inputExpected.files.length should be(3)
+    inputExpected.files.size should be(3)
 
     // Tests on splits
-    splitsExpected.files.length should be(1)
-    splits should be(FileDetailsSet(Nil))
+    splitsExpected.files.size should be(1)
+    splits should be(FileDetailsSet(Set()))
 
     // Tests on bigs
-    bigsExpected.files.length should be(1)
+    bigsExpected.files.size should be(1)
     bigs should be (bigsExpected)
 
     // Tests on smalls
-    smallsExpected.files.length should be(2)
+    smallsExpected.files.size should be(2)
     smalls should be (smallsExpected)
 
     val expectedRddWithOnlyBigFileSplit = sc.newAPIHadoopFile[K, V, I](SplitsDir(splitsDir).getDataPath)
