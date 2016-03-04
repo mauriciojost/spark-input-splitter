@@ -19,6 +19,11 @@ object Metadata {
 
   val SPLITS_MAPPING_FILENAME = "splits.mapping"
 
+  def resolve(loadedMetadata: Metadata, discoveredMetadata: Metadata) = {
+    // TODO Saved metadata is ignored for now.
+    discoveredMetadata
+  }
+
   def load(splitsDirO: SplitsDir)(implicit fs: FileSystem): Metadata = {
     val splitsMappingFile = new Path(splitsDirO.getMetadataPath + "/" + SPLITS_MAPPING_FILENAME)
     var fsDataInputStream: FSDataInputStream = null

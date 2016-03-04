@@ -1,7 +1,7 @@
 package eu.pepot.eu.spark.inputsplitter
 
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
-import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSet, FileLister, FilesSubstractor}
+import eu.pepot.eu.spark.inputsplitter.common.file.{FileLister, FilesSubstractor}
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Metadata, SplitDetails, SplitsDir}
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.mapreduce.{InputFormat, OutputFormat}
@@ -26,20 +26,22 @@ class SplitReader(
     splitsDir: String
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
     val splitsDirO = SplitsDir(splitsDir)
-    val (splits, smalls, bigs) = determineSplitsSmallsBigs(inputDir, splitsDirO)
-    val rdd = sc.newAPIHadoopFile[K, V, I](smalls.toStringListWith(splits))
-    SplitDetails[K, V](rdd, Metadata(splits, bigs, smalls))
+    val discoveredMetadata = determineSplitsSmallsBigs(inputDir, splitsDirO)
+    val loadedMetadata = Metadata.load(splitsDirO)(FileSystem.get(sc.hadoopConfiguration))
+    val Metadata(resolvedSplits, resolvedBigs, resolvedSmalls) = Metadata.resolve(loadedMetadata, discoveredMetadata)
+    val rdd = sc.newAPIHadoopFile[K, V, I](resolvedSmalls.toStringListWith(resolvedSplits))
+    SplitDetails[K, V](rdd, Metadata(resolvedSplits, resolvedBigs, resolvedSmalls))
   }
 
   private[inputsplitter] def determineSplitsSmallsBigs(
     inputDir: String,
     splitsDir: SplitsDir
-  )(implicit sc: SparkContext): (FileDetailsSet, FileDetailsSet, FileDetailsSet) = {
+  )(implicit sc: SparkContext): Metadata = {
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
     val input = FileLister.listFiles(inputDir)
     val bigs = FilesMatcher.matches(input, condition)
     val splits = FileLister.listFiles(splitsDir.getDataPath)
     val smalls = FilesSubstractor.substract(input, bigs)
-    (splits, smalls, bigs)
+    Metadata(splits, bigs, smalls)
   }
 }
