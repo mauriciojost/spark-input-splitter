@@ -1,49 +1,44 @@
 package eu.pepot.eu.spark.inputsplitter.common.file
 
-import java.io.FileNotFoundException
-
+import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
 import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
-import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs.FileSystem
-import org.specs2.mutable._
+import org.apache.hadoop.mapreduce.lib.input.InvalidInputException
+import org.scalatest.{FunSuite, Matchers}
 
-class FilesListerSpec extends Specification {
+class FilesListerSpec extends FunSuite with CustomSparkContext with Matchers {
 
-  implicit val fs = FileSystem.getLocal(new Configuration())
+  test("FileLister must list all regular files (1)") {
 
-  "FileLister" should {
+    implicit val scc = sc
 
-    "list all regular files (1)" in {
-      val inputDir = resourcesBaseDir("scenario-000/input")
-
-      val inputs = FileLister.listFiles(inputDir)
-
-      inputs.files.map(_.path.getName).toSet mustEqual
-        Set(
-          "big.txt",
-          "small1.txt",
-          "small2.txt"
-        )
-    }
-
-    "list all regular files (2)" in {
-      val inputDir = resourcesBaseDir("hidden")
-
-      val inputs = FileLister.listFiles(inputDir)
-
-      inputs.files.map(_.path.getName).toSet mustEqual
-        Set(
-          "_SUCCESS",
-          "part-r-00000"
-        )
-    }
-
-    "throw exception if bad path" in {
-      val inputDir = resourcesBaseDir("scenario-000/input-inexistent")
-      FileLister.listFiles(inputDir) must throwAn[FileNotFoundException]
-    }
+    val inputDir = resourcesBaseDir("scenario-000/input")
+    val inputs = FileLister.listFiles(inputDir)
+    inputs.files.map(_.path.getName).toSet should be(Set("big.txt", "small1.txt", "small2.txt"))
 
   }
+
+  test("list all regular files (2)") {
+
+    implicit val scc = sc
+
+    val inputDir = resourcesBaseDir("hidden")
+    val inputs = FileLister.listFiles(inputDir)
+    inputs.files.map(_.path.getName).toSet should be(Set("part-r-00000"))
+
+  }
+
+  test("throw exception if bad path") {
+
+    implicit val scc = sc
+
+    val inputDir = resourcesBaseDir("scenario-000/input-inexistent")
+    val thrown = intercept[Exception] {
+      FileLister.listFiles(inputDir)
+    }
+    assert(thrown.isInstanceOf[InvalidInputException])
+
+  }
+
 
 }
 

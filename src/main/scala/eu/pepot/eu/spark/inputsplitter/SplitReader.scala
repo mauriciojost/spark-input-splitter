@@ -37,7 +37,6 @@ class SplitReader(
     inputDir: String,
     splitsDir: SplitsDir
   )(implicit sc: SparkContext): Metadata = {
-    implicit val fs = FileSystem.get(sc.hadoopConfiguration)
     val input = FileLister.listFiles(inputDir)
     val bigs = FilesMatcher.matches(input, condition)
     val splits = FileLister.listFiles(splitsDir.getDataPath)

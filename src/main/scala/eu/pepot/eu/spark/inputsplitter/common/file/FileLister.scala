@@ -1,23 +1,12 @@
 package eu.pepot.eu.spark.inputsplitter.common.file
 
-import org.apache.hadoop.fs.{FileSystem, Path}
-
-import scala.collection.mutable
+import org.apache.spark.SparkContext
 
 object FileLister {
 
-  def listFiles(directory: String)(implicit fs: FileSystem): FileDetailsSet = {
-    val allCompleteFilesIterator = fs.listFiles(new Path(directory), true)
-    val files = mutable.ArrayBuffer[FileDetails]()
-    while (allCompleteFilesIterator.hasNext) {
-      val completeFile = allCompleteFilesIterator.next()
-      val fileDetails = FileDetails(completeFile.getPath, completeFile.getLen)
-      files += fileDetails
-    }
-
-    FileDetailsSet(
-      files = files.toSet
-    )
+  def listFiles(directory: String)(implicit sc: SparkContext): FileDetailsSet = {
+    val files = org.apache.hadoop.mapreduce.lib.input.FileLister.parseOnlyFiles(directory)
+    FileDetailsSet(files.map(f => FileDetails(f.getPath, f.getLen)).toSet)
   }
 
 }

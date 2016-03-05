@@ -56,7 +56,7 @@ class SplitWriter(
   ](
     inputDir: String
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
-    val (bigs, smalls) = determineBigsSmalls[K, V](inputDir)(sc)
+    val (bigs, smalls) = determineBigsSmalls[K, V](inputDir)
     val rdd = sc.hadoopFile[K, V, I](bigs.toStringList())
     SplitDetails[K, V](rdd, Metadata(FileDetailsSet(Set()), bigs, smalls))
   }
@@ -69,7 +69,7 @@ class SplitWriter(
   ](
     inputDir: String
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
-    val (bigs, smalls) = determineBigsSmalls[K, V](inputDir)(sc)
+    val (bigs, smalls) = determineBigsSmalls[K, V](inputDir)
     val rdd = sc.newAPIHadoopFile[K, V, I](bigs.toStringList())
     SplitDetails[K, V](rdd, Metadata(FileDetailsSet(Set()), bigs, smalls))
   }
@@ -79,8 +79,7 @@ class SplitWriter(
   V: ClassTag
   ](
     inputDir: String
-  )(sc: SparkContext): (FileDetailsSet, FileDetailsSet) = {
-    implicit val fs = FileSystem.get(sc.hadoopConfiguration)
+  )(implicit sc: SparkContext): (FileDetailsSet, FileDetailsSet) = {
     val input = FileLister.listFiles(inputDir)
     logger.warn("Using input: {}", inputDir)
     val bigs = FilesMatcher.matches(input, condition)

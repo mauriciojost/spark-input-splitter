@@ -2,11 +2,10 @@ package eu.pepot.eu.spark.inputsplitter
 
 import com.holdenkarau.spark.testing.RDDComparisions
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
-import eu.pepot.eu.spark.inputsplitter.common.file.{FileLister, FileDetailsSetSubstractor}
+import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSetSubstractor, FileLister}
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Metadata, SplitDetails, SplitsDir}
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
 import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
-import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat
@@ -28,8 +27,8 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext with Matchers {
 
     val conditionForSplitting = Condition(biggerThan = Some(50)) // Expecting to have splits of files bigger than 50 bytes
 
-    val inputExpected = FileLister.listFiles(inputDir)(FileSystem.get(scc.hadoopConfiguration))
-    val splitsExpected = FileLister.listFiles(SplitsDir(splitsDir).getDataPath)(FileSystem.get(scc.hadoopConfiguration))
+    val inputExpected = FileLister.listFiles(inputDir)
+    val splitsExpected = FileLister.listFiles(SplitsDir(splitsDir).getDataPath)
     val bigsExpected = FilesMatcher.matches(inputExpected, conditionForSplitting)
     val smallsExpected = FileDetailsSetSubstractor.substract(inputExpected, bigsExpected)
 
