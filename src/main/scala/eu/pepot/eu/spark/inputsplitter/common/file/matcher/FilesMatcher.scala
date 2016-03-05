@@ -1,8 +1,11 @@
 package eu.pepot.eu.spark.inputsplitter.common.file.matcher
 
 import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetails, FileDetailsSet}
+import org.slf4j.LoggerFactory
 
 object FilesMatcher {
+
+  val logger = LoggerFactory.getLogger(this.getClass)
 
   /**
     * Retrieve only the files that conform to the condition.
