@@ -24,7 +24,16 @@ object Metadata {
 
   def resolve(loadedMetadata: Metadata, discoveredMetadata: Metadata) = {
     // TODO Saved metadata is ignored for now.
-    discoveredMetadata
+    loadedMetadata match {
+      case `discoveredMetadata` => {
+        logger.debug("Matching metadatas: " + loadedMetadata)
+        discoveredMetadata
+      }
+      case _ => {
+        logger.warn("Non matching metadatas, loaded:\n" + loadedMetadata + "\n,discovered:\n" + discoveredMetadata)
+        discoveredMetadata
+      }
+    }
   }
 
   def load(splitsDirO: SplitsDir)(implicit fs: FileSystem): Metadata = {
