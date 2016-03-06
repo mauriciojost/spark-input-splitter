@@ -55,7 +55,7 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
 
     rddWithOnlyBigsRecords.count() should be (5)
     expectedRddWithOnlyBigFileSplit.count() should be (rddWithOnlyBigsRecords.count())
-    rddWithOnlyBigsRecords.collect() should be (expectedRddWithOnlyBigFileSplit.collect())
+    rddWithOnlyBigsRecords.map{case (f, k, v) => (k, v)}.collect() should be (expectedRddWithOnlyBigFileSplit.collect())
 
   }
 

@@ -1,11 +1,12 @@
 package eu.pepot.eu.spark.inputsplitter
 
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
-import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSet, FileLister, FileDetailsSetSubstractor}
+import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSetSubstractor, FileLister}
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Metadata, SplitDetails, SplitsDir}
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.mapreduce.{InputFormat, OutputFormat}
 import org.apache.spark.SparkContext
+import org.apache.spark.rdd.RDD
 import org.slf4j.LoggerFactory
 
 import scala.reflect.ClassTag
@@ -29,8 +30,9 @@ class SplitReader(
     val discoveredMetadata = determineSplitsSmallsBigs(inputDir, splitsDirO)
     val loadedMetadata = Metadata.load(splitsDirO)(FileSystem.get(sc.hadoopConfiguration))
     val Metadata(resolvedSplits, resolvedBigs, resolvedSmalls) = Metadata.resolve(loadedMetadata, discoveredMetadata)
-    val rdd = sc.newAPIHadoopFile[K, V, I](FileDetailsSet.toStringList(resolvedSmalls,resolvedSplits))
-    SplitDetails[K, V](rdd, Metadata(resolvedSplits, resolvedBigs, resolvedSmalls))
+    val rdds = (resolvedSmalls.files ++ resolvedSplits.files).map(_.path.toString).map(f => sc.newAPIHadoopFile[K, V, I](f).map{case (k, v) => (f, k, v)})
+    val rddRep: RDD[(String, K, V)] = sc.union(rdds.toSeq)
+    SplitDetails[K, V](rddRep, Metadata(resolvedSplits, resolvedBigs, resolvedSmalls))
   }
 
   private[inputsplitter] def determineSplitsSmallsBigs(

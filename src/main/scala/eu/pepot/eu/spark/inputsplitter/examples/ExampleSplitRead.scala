@@ -37,7 +37,7 @@ object ExampleSplitRead {
 
     val rdd = splitter.rdd[K, V, I, O](input, splits).rdd
 
-    rdd.saveAsNewAPIHadoopFile[O](output)
+    rdd.map{case (p, k, v) => (k, v)}.saveAsNewAPIHadoopFile[O](output)
 
   }
 

@@ -56,7 +56,7 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext with Matchers {
     expectedRdd.count() should be (9)
     rddWithWholeInput.count() should be (9)
     expectedRdd.count() should be (rddWithWholeInput.count())
-    RDDComparisions.compare(expectedRdd, rddWithWholeInput) should be (None)
+    RDDComparisions.compare(expectedRdd, rddWithWholeInput.map{case (p, k, v) => (k, v)}) should be (None)
 
   }
 
