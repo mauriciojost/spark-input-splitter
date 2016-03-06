@@ -1,6 +1,5 @@
 package eu.pepot.eu.spark.inputsplitter
 
-import com.holdenkarau.spark.testing.RDDComparisions
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
 import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSet, FileDetailsSetSubstractor, FileLister}
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Metadata, SplitDetails, SplitsDir}
@@ -56,7 +55,7 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
 
     rddWithOnlyBigsRecords.count() should be (5)
     expectedRddWithOnlyBigFileSplit.count() should be (rddWithOnlyBigsRecords.count())
-    RDDComparisions.compare(expectedRddWithOnlyBigFileSplit, rddWithOnlyBigsRecords) should be (None)
+    rddWithOnlyBigsRecords.collect() should be (expectedRddWithOnlyBigFileSplit.collect())
 
   }
 
