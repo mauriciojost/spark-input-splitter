@@ -1,7 +1,7 @@
 package eu.pepot.eu.spark.inputsplitter
 
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
-import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSet, FileDetailsSetSubstractor, FileLister}
+import eu.pepot.eu.spark.inputsplitter.common.file._
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Metadata, SplitDetails, SplitsDir}
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
 import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
@@ -30,15 +30,22 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
     val splitsExpected = FileLister.listFiles(SplitsDir(splitsDir).getDataPath)
     val bigsExpected = FilesMatcher.matches(inputExpected, conditionForSplitting)
     val smallsExpected = FileDetailsSetSubstractor.substract(inputExpected, bigsExpected)
+    val mappingsExpected = Mappings(
+      Set(
+        (FileDetails(bigsExpected.files.head.path, 105), FileDetails(splitsExpected.files.head.path, 105))
+      )
+    )
 
     val splitWriter = new SplitWriter(conditionForSplitting)
 
     val SplitDetails(rddWithOnlyBigsRecords, Metadata(mappings, splits, bigs, smalls)) = splitWriter.asRddNew[K, V, I, O](inputDir)
 
-    // TODO mappings asserts
-
     // Tests on inputs
     inputExpected.files.size should be(3)
+
+    // Tests on mappings
+    //mappingsExpected.bigsToSplits.size should be(1)
+    //mappings should be(mappingsExpected)
 
     // Tests on splits
     splitsExpected.files.size should be(1)
@@ -55,9 +62,9 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
     val expectedRddWithOnlyBigFileSplit = sc.newAPIHadoopFile[K, V, I](SplitsDir(splitsDir).getDataPath)
     expectedRddWithOnlyBigFileSplit.count() should be (5)
 
-    rddWithOnlyBigsRecords.count() should be (5)
-    expectedRddWithOnlyBigFileSplit.count() should be (rddWithOnlyBigsRecords.count())
-    rddWithOnlyBigsRecords.map{case (f, k, v) => (k, v)}.collect() should be (expectedRddWithOnlyBigFileSplit.collect())
+    sc.union(rddWithOnlyBigsRecords).count() should be (5)
+    expectedRddWithOnlyBigFileSplit.count() should be (sc.union(rddWithOnlyBigsRecords).count())
+    sc.union(rddWithOnlyBigsRecords).map{case (f, k, v) => (k, v)}.collect() should be (expectedRddWithOnlyBigFileSplit.collect())
 
   }
 
