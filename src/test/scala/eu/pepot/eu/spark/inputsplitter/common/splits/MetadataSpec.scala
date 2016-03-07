@@ -1,7 +1,7 @@
 package eu.pepot.eu.spark.inputsplitter.common.splits
 
 import com.google.common.io.Files
-import eu.pepot.eu.spark.inputsplitter.common.file.FileDetailsSet
+import eu.pepot.eu.spark.inputsplitter.common.file.{Mappings, FileDetailsSet}
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
 import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
 import org.apache.commons.io.FileUtils
@@ -22,16 +22,19 @@ class MetadataSpec extends FunSuite with CustomSparkContext with Matchers {
 
     val mds = List(
       Metadata(
+        mappings = Mappings(Set()),
         splits = FileDetailsSet(Set()),
         bigs = FileDetailsSet(Set()),
         smalls = FileDetailsSet(Set())
       ),
       Metadata(
+        mappings = Mappings(Set()),
         splits = FileDetailsSet(Set()),
         bigs = FileDetailsSet(Set(toFDs(big))),
         smalls = FileDetailsSet(Set(toFDs(small1)))
       ),
       Metadata(
+        mappings = Mappings(Set()),
         splits = FileDetailsSet(Set(toFDs(split))),
         bigs = FileDetailsSet(Set(toFDs(big))),
         smalls = FileDetailsSet(Set(toFDs(small1), toFDs(small2)))
@@ -56,11 +59,13 @@ class MetadataSpec extends FunSuite with CustomSparkContext with Matchers {
     implicit val fs = FileSystem.get(scc.hadoopConfiguration)
 
     val mdLoaded = Metadata(
+      mappings = Mappings(Set()),
       splits = FileDetailsSet(Set(toFDs(split))),
       bigs = FileDetailsSet(Set(toFDs(big))),
       smalls = FileDetailsSet(Set(toFDs(small1), toFDs(small2)))
     )
     val mdDiscovered = Metadata(
+      mappings = Mappings(Set()),
       splits = FileDetailsSet(Set()),
       bigs = FileDetailsSet(Set(toFDs(big))),
       smalls = FileDetailsSet(Set(toFDs(small1)))
