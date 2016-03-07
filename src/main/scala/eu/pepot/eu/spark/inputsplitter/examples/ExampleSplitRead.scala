@@ -35,9 +35,9 @@ object ExampleSplitRead {
     type I = KeyValueTextInputFormat
     type O = TextOutputFormat[K, V]
 
-    val rdd = sc.union(splitter.rdd[K, V, I, O](input, splits).rdds)
+    val rdd = sc.union(splitter.rdd[K, V, I, O](input, splits).rdds.map(_._2))
 
-    rdd.map{case (p, k, v) => (k, v)}.saveAsNewAPIHadoopFile[O](output)
+    rdd.saveAsNewAPIHadoopFile[O](output)
 
   }
 

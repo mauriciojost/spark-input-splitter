@@ -27,7 +27,7 @@ class SplitWriter(
   )(implicit sc: SparkContext): Unit = {
     val splitsDirO = SplitsDir(splitsDir)
     val splitDetails = asRdd[K, V, I, O](inputDir)
-    sc.union(splitDetails.rdds).map{case (p, k, v) => (k, v)}.saveAsHadoopFile[O](splitsDirO.getDataPath)
+    sc.union(splitDetails.rdds.map(_._2)).saveAsHadoopFile[O](splitsDirO.getDataPath)
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
     Metadata.dump(splitDetails.metadata, splitsDirO)
   }
@@ -43,7 +43,7 @@ class SplitWriter(
   )(implicit sc: SparkContext): Unit = {
     val splitsDirO = SplitsDir(splitsDir)
     val splitDetails = asRddNew[K, V, I, O](inputDir)
-    sc.union(splitDetails.rdds).map{case (p, k, v) => (k, v)}.saveAsNewAPIHadoopFile[O](splitsDirO.getDataPath)
+    sc.union(splitDetails.rdds.map(_._2)).saveAsNewAPIHadoopFile[O](splitsDirO.getDataPath)
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
     Metadata.dump(splitDetails.metadata, splitsDirO)
   }
@@ -57,7 +57,7 @@ class SplitWriter(
     inputDir: String
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
     val (bigs, smalls) = determineBigsSmalls[K, V](inputDir)
-    val rdds = bigs.files.map(big => sc.hadoopFile[K, V, I](big.path.toString).map{case (k, v) => (big.path.toString, k, v)})
+    val rdds = bigs.files.map(big => (big.path, sc.hadoopFile[K, V, I](big.path.toString)))
     SplitDetails[K, V](rdds.toSeq, Metadata(Mappings(Set()), FileDetailsSet(Set()), bigs, smalls))
   }
 
@@ -70,7 +70,7 @@ class SplitWriter(
     inputDir: String
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
     val (bigs, smalls) = determineBigsSmalls[K, V](inputDir)
-    val rdds = bigs.files.map(_.path.toString).map(f => sc.newAPIHadoopFile[K, V, I](f).map{case (k, v) => (f, k, v)})
+    val rdds = bigs.files.map(_.path.toString).map(f => (f, sc.newAPIHadoopFile[K, V, I](f)))
     SplitDetails[K, V](rdds.toSeq, Metadata(Mappings(Set()), FileDetailsSet(Set()), bigs, smalls))
   }
 

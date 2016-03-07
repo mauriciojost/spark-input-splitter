@@ -56,9 +56,9 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext with Matchers {
     // Tests on the RDD (whole input)
     val expectedRdd = sc.newAPIHadoopFile[K, V, I](inputDir)
     expectedRdd.count() should be (9)
-    sc.union(rddWithWholeInput).count() should be (9)
-    expectedRdd.count() should be (sc.union(rddWithWholeInput).count())
-    RDDComparisions.compare(expectedRdd, sc.union(rddWithWholeInput).map{case (p, k, v) => (k, v)}) should be (None)
+    sc.union(rddWithWholeInput.map(_._2)).count() should be (9)
+    expectedRdd.count() should be (sc.union(rddWithWholeInput.map(_._2)).count())
+    RDDComparisions.compare(expectedRdd, sc.union(rddWithWholeInput.map(_._2))) should be (None)
 
   }
 

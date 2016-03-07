@@ -29,7 +29,7 @@ class SplitReader(
     val discoveredMetadata = determineSplitsSmallsBigs(inputDir, splitsDirO)
     val loadedMetadata = Metadata.load(splitsDirO)(FileSystem.get(sc.hadoopConfiguration))
     val Metadata(resolvedMapping, resolvedSplits, resolvedBigs, resolvedSmalls) = Metadata.resolve(loadedMetadata, discoveredMetadata)
-    val rdds = (resolvedSmalls.files ++ resolvedSplits.files).map(_.path.toString).map(f => sc.newAPIHadoopFile[K, V, I](f).map{case (k, v) => (f, k, v)})
+    val rdds = (resolvedSmalls.files ++ resolvedSplits.files).map(_.path.toString).map(f => (f, sc.newAPIHadoopFile[K, V, I](f)))
     SplitDetails[K, V](rdds.toSeq, Metadata(Mappings(Set()), resolvedSplits, resolvedBigs, resolvedSmalls))
   }
 
