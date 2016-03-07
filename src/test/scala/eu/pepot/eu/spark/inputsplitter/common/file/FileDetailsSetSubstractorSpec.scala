@@ -1,7 +1,6 @@
 package eu.pepot.eu.spark.inputsplitter.common.file
 
 import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
-import org.apache.hadoop.fs.Path
 import org.specs2.mutable._
 
 class FileDetailsSetSubstractorSpec extends Specification {
@@ -37,15 +36,15 @@ class FileDetailsSetSubstractorSpec extends Specification {
     }
 
     "get difference element when name changes" in {
-      val base = FileDetailsSet(Set(FileDetails(new Path("a"), 10)))
-      val subs = FileDetailsSet(Set(FileDetails(new Path("b"), 10)))
+      val base = FileDetailsSet(Set(FileDetails("a", 10)))
+      val subs = FileDetailsSet(Set(FileDetails("b", 10)))
       val diff = FileDetailsSetSubstractor.substract(base, subs)
       diff.files.size shouldEqual(1)
     }
 
     "get difference element when size changes" in {
-      val base = FileDetailsSet(Set(FileDetails(new Path("a"), 10)))
-      val subs = FileDetailsSet(Set(FileDetails(new Path("a"), 20)))
+      val base = FileDetailsSet(Set(FileDetails("a", 10)))
+      val subs = FileDetailsSet(Set(FileDetails("a", 20)))
       val diff = FileDetailsSetSubstractor.substract(base, subs)
       diff.files.size shouldEqual(1)
     }

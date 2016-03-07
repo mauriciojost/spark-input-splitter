@@ -13,7 +13,7 @@ class FilesListerSpec extends FunSuite with CustomSparkContext with Matchers {
 
     val inputDir = resourcesBaseDir("scenario-000/input")
     val inputs = FileLister.listFiles(inputDir)
-    inputs.files.map(_.path.getName).toSet should be(Set("big.txt", "small1.txt", "small2.txt"))
+    inputs.files.map(_.asPath.getName).toSet should be(Set("big.txt", "small1.txt", "small2.txt"))
 
   }
 
@@ -23,7 +23,7 @@ class FilesListerSpec extends FunSuite with CustomSparkContext with Matchers {
 
     val inputDir = resourcesBaseDir("hidden")
     val inputs = FileLister.listFiles(inputDir)
-    inputs.files.map(_.path.getName).toSet should be(Set("part-r-00000"))
+    inputs.files.map(_.asPath.getName).toSet should be(Set("part-r-00000"))
 
   }
 

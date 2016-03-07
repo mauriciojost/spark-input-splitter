@@ -9,7 +9,7 @@ object FileLister {
 
   def listFiles(directory: String)(implicit sc: SparkContext): FileDetailsSet = {
     val files = org.apache.hadoop.mapreduce.lib.input.FileLister.parseOnlyFiles(directory)
-    FileDetailsSet(files.map(f => FileDetails(f.getPath, f.getLen)).toSet)
+    FileDetailsSet(files.map(f => FileDetails(f.getPath.toString, f.getLen)).toSet)
   }
 
 }

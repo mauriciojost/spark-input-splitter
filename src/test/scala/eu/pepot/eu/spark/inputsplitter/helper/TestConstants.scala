@@ -3,7 +3,6 @@ package eu.pepot.eu.spark.inputsplitter.helper
 import java.io.File
 
 import eu.pepot.eu.spark.inputsplitter.common.file.FileDetails
-import org.apache.hadoop.fs.Path
 
 object TestConstants {
 
@@ -16,7 +15,7 @@ object TestConstants {
   }
 
   def toFDs(s: String): FileDetails = {
-    FileDetails(new Path(s), new File(s).length())
+    FileDetails(s, new File(s).length())
   }
 
 
