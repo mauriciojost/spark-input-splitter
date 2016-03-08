@@ -1,6 +1,7 @@
 package eu.pepot.eu.spark.inputsplitter
 
-import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
+import eu.pepot.eu.spark.inputsplitter.common.config.Config
+import eu.pepot.eu.spark.inputsplitter.common.file.matcher.FilesMatcher
 import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSetSubstractor, FileLister, Mappings}
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Arrow, Metadata, SplitDetails, SplitsDir}
 import org.apache.hadoop.fs.FileSystem
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory
 import scala.reflect.ClassTag
 
 class SplitReader(
-  condition: Condition
+  config: Config
 ) {
 
   val logger = LoggerFactory.getLogger(this.getClass)
@@ -38,7 +39,7 @@ class SplitReader(
     splitsDir: SplitsDir
   )(implicit sc: SparkContext): Metadata = {
     val input = FileLister.listFiles(inputDir)
-    val bigs = FilesMatcher.matches(input, condition)
+    val bigs = FilesMatcher.matches(input, config.splitCondition)
     val splits = FileLister.listFiles(splitsDir.getDataPath)
     val smalls = FileDetailsSetSubstractor.substract(input, bigs)
     Metadata(Mappings(Set()), splits, bigs, smalls)

@@ -1,6 +1,7 @@
 package eu.pepot.eu.spark.inputsplitter
 
 import com.holdenkarau.spark.testing.RDDComparisions
+import eu.pepot.eu.spark.inputsplitter.common.config.Config
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
 import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSetSubstractor, FileLister}
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Metadata, SplitDetails, SplitsDir}
@@ -32,7 +33,7 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext with Matchers {
     val bigsExpected = FilesMatcher.matches(inputExpected, conditionForSplitting)
     val smallsExpected = FileDetailsSetSubstractor.substract(inputExpected, bigsExpected)
 
-    val splitReader = new SplitReader(conditionForSplitting)
+    val splitReader = new SplitReader(Config(conditionForSplitting))
 
     val SplitDetails(rddWithWholeInput, Metadata(mappings, splits, bigs, smalls)) = splitReader.rdd[K, V, I, O](inputDir, splitsDir)
 

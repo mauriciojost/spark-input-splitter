@@ -1,7 +1,8 @@
 package eu.pepot.eu.spark.inputsplitter
 
-import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
+import eu.pepot.eu.spark.inputsplitter.common.config.Config
 import eu.pepot.eu.spark.inputsplitter.common.file._
+import eu.pepot.eu.spark.inputsplitter.common.file.matcher.FilesMatcher
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Arrow, Metadata, SplitDetails, SplitsDir}
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.{mapred, mapreduce}
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory
 import scala.reflect.ClassTag
 
 class SplitWriter(
-  condition: Condition
+  config: Config
 ) {
 
   val logger = LoggerFactory.getLogger(this.getClass)
@@ -29,7 +30,7 @@ class SplitWriter(
     val splitDetails = asRdd[K, V, I, O](inputDir)
     val mappings = splitDetails.arrows.flatMap { arrow =>
       val output = splitsDirO.getDataPathWith(arrow.big.asPath().getName)
-      arrow.rdd.saveAsHadoopFile[O](output)
+      arrow.rdd.repartition(config.getAmountOfSplits(arrow.big.size)).saveAsHadoopFile[O](output)
       val outputFiles = FileLister.listFiles(output).files
       outputFiles.map(outputFile => (arrow.big, outputFile))
     }.toSet
@@ -48,11 +49,11 @@ class SplitWriter(
   )(implicit sc: SparkContext): Unit = {
     val splitsDirO = SplitsDir(splitsDir)
     val splitDetails = asRddNew[K, V, I, O](inputDir)
-    val mappings = splitDetails.arrows.flatMap { toSplit =>
-      val output = splitsDirO.getDataPathWith(toSplit.big.asPath().getName)
-      toSplit.rdd.saveAsNewAPIHadoopFile[O](output)
+    val mappings = splitDetails.arrows.flatMap { arrow =>
+      val output = splitsDirO.getDataPathWith(arrow.big.asPath().getName)
+      arrow.rdd.repartition(config.getAmountOfSplits(arrow.big.size)).saveAsNewAPIHadoopFile[O](output)
       val outputFiles = FileLister.listFiles(output).files
-      outputFiles.map(outputFile => (toSplit.big, outputFile))
+      outputFiles.map(outputFile => (arrow.big, outputFile))
     }.toSet
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
     Metadata.dump(Metadata(Mappings(mappings), splitDetails.metadata.splits, splitDetails.metadata.bigs, splitDetails.metadata.smalls), splitsDirO)
@@ -92,7 +93,7 @@ class SplitWriter(
   )(implicit sc: SparkContext): (FileDetailsSet, FileDetailsSet) = {
     val input = FileLister.listFiles(inputDir)
     logger.warn("Using input: {}", inputDir)
-    val bigs = FilesMatcher.matches(input, condition)
+    val bigs = FilesMatcher.matches(input, config.splitCondition)
     logger.warn("Detected bigs from input: {}", bigs)
     val smalls = FileDetailsSetSubstractor.substract(input, bigs)
     logger.warn("Detected smalls from input: {}", smalls)

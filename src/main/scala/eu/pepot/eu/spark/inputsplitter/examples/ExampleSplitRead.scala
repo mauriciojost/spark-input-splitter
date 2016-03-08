@@ -1,6 +1,7 @@
 package eu.pepot.eu.spark.inputsplitter.examples
 
 import eu.pepot.eu.spark.inputsplitter.SplitReader
+import eu.pepot.eu.spark.inputsplitter.common.config.Config
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.Condition
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat
@@ -28,7 +29,8 @@ object ExampleSplitRead {
     implicit val sc = new SparkContext(sparkConf)
 
     val condition = Condition(biggerThan = Some(50))
-    val splitter = new SplitReader(condition)
+    val config = Config(Condition(biggerThan = Some(1024 * 1024 * 20)))
+    val splitter = new SplitReader(config)
 
     type K = Text
     type V = Text

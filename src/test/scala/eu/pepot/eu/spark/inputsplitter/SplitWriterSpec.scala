@@ -1,5 +1,6 @@
 package eu.pepot.eu.spark.inputsplitter
 
+import eu.pepot.eu.spark.inputsplitter.common.config.Config
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
 import eu.pepot.eu.spark.inputsplitter.common.file._
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Metadata, SplitDetails, SplitsDir}
@@ -36,7 +37,7 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
       )
     )
 
-    val splitWriter = new SplitWriter(conditionForSplitting)
+    val splitWriter = new SplitWriter(Config(conditionForSplitting))
 
     val SplitDetails(rddWithOnlyBigsRecords, Metadata(mappings, splits, bigs, smalls)) = splitWriter.asRddNew[K, V, I, O](inputDir)
 
