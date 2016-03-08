@@ -5,4 +5,6 @@ case class SplitsDir(
 ) {
   def getDataPath = path + "/data"
   def getMetadataPath = path + "/metadata"
+
+  def getDataPathWith(suffix: String) = path + "/data/" + suffix
 }
