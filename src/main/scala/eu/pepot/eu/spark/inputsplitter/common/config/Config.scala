@@ -4,7 +4,7 @@ import eu.pepot.eu.spark.inputsplitter.common.file.matcher.Condition
 import eu.pepot.eu.spark.inputsplitter.common.splits.resolvers.{IdentityMetadataResolver, MetadataResolver}
 
 case class Config(
-  splitCondition: Condition,
+  splitCondition: Condition = Condition(),
   bytesPerSplit: Float = 1024 * 1024 * 128,
   metadataResolver: MetadataResolver = IdentityMetadataResolver
 ) {
