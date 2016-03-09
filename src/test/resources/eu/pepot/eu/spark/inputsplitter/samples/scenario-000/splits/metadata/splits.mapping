@@ -1,0 +1,4 @@
+I,file:/CURRDIR/src/test/resources/eu/pepot/eu/spark/inputsplitter/samples/scenario-000/input/big.txt,105
+i,file:/CURRDIR/src/test/resources/eu/pepot/eu/spark/inputsplitter/samples/scenario-000/input/small1.txt,48
+i,file:/CURRDIR/src/test/resources/eu/pepot/eu/spark/inputsplitter/samples/scenario-000/input/small2.txt,48
+s,file:/CURRDIR/src/test/resources/eu/pepot/eu/spark/inputsplitter/samples/scenario-000/input/big.txt,105,file:/CURRDIR/src/test/resources/eu/pepot/eu/spark/inputsplitter/samples/scenario-000/splits/data/part-r-00000,105

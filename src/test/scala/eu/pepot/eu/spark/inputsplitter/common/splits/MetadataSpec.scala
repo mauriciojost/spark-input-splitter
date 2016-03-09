@@ -2,6 +2,7 @@ package eu.pepot.eu.spark.inputsplitter.common.splits
 
 import com.google.common.io.Files
 import eu.pepot.eu.spark.inputsplitter.common.file.{Mappings, FileDetailsSet}
+import eu.pepot.eu.spark.inputsplitter.common.splits.resolvers.IdentityMetadataResolver
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
 import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
 import org.apache.commons.io.FileUtils
@@ -23,19 +24,16 @@ class MetadataSpec extends FunSuite with CustomSparkContext with Matchers {
     val mds = List(
       Metadata(
         mappings = Mappings(Set()),
-        splits = FileDetailsSet(Set()),
         bigs = FileDetailsSet(Set()),
         smalls = FileDetailsSet(Set())
       ),
       Metadata(
         mappings = Mappings(Set()),
-        splits = FileDetailsSet(Set()),
         bigs = FileDetailsSet(Set(toFDs(big))),
         smalls = FileDetailsSet(Set(toFDs(small1)))
       ),
       Metadata(
         mappings = Mappings(Set()),
-        splits = FileDetailsSet(Set(toFDs(split))),
         bigs = FileDetailsSet(Set(toFDs(big))),
         smalls = FileDetailsSet(Set(toFDs(small1), toFDs(small2)))
       )
@@ -53,27 +51,23 @@ class MetadataSpec extends FunSuite with CustomSparkContext with Matchers {
     }
   }
 
-  test("metadata should resolve loaded and discovered metadatas using discovered one") {
+  test("metadata should resolve loaded and discovered metadatas using loaded one") {
 
     implicit val scc = sc
     implicit val fs = FileSystem.get(scc.hadoopConfiguration)
 
     val mdLoaded = Metadata(
       mappings = Mappings(Set()),
-      splits = FileDetailsSet(Set(toFDs(split))),
       bigs = FileDetailsSet(Set(toFDs(big))),
       smalls = FileDetailsSet(Set(toFDs(small1), toFDs(small2)))
     )
-    val mdDiscovered = Metadata(
-      mappings = Mappings(Set()),
-      splits = FileDetailsSet(Set()),
-      bigs = FileDetailsSet(Set(toFDs(big))),
-      smalls = FileDetailsSet(Set(toFDs(small1)))
-    )
+    val discSplits = FileDetailsSet(Set(toFDs(split)))
+    val discBigs = FileDetailsSet(Set(toFDs(big)))
+    val discSmalls = FileDetailsSet(Set(toFDs(small1)))
 
-    val mdResolved = Metadata.resolve(mdLoaded, mdDiscovered)
+    val mdResolved = mdLoaded.resolve(discSplits, discBigs, discSmalls)(IdentityMetadataResolver)
 
-    mdResolved should be(mdDiscovered)
+    mdResolved should be(mdLoaded)
 
   }
 

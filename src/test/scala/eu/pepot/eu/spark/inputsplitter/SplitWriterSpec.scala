@@ -1,9 +1,9 @@
 package eu.pepot.eu.spark.inputsplitter
 
 import eu.pepot.eu.spark.inputsplitter.common.config.Config
-import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
 import eu.pepot.eu.spark.inputsplitter.common.file._
-import eu.pepot.eu.spark.inputsplitter.common.splits.{Metadata, SplitDetails, SplitsDir}
+import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
+import eu.pepot.eu.spark.inputsplitter.common.splits.{SplitDetails, SplitsDir}
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
 import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
 import org.apache.hadoop.io.Text
@@ -39,7 +39,7 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
 
     val splitWriter = new SplitWriter(Config(conditionForSplitting))
 
-    val SplitDetails(rddWithOnlyBigsRecords, Metadata(mappings, splits, bigs, smalls)) = splitWriter.asRddNew[K, V, I, O](inputDir)
+    val SplitDetails(rddWithOnlyBigsRecords, metadata) = splitWriter.asRddNew[K, V, I, O](inputDir)
 
     // Tests on inputs
     inputExpected.files.size should be(3)
@@ -50,15 +50,15 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
 
     // Tests on splits
     splitsExpected.files.size should be(1)
-    splits should be(FileDetailsSet(Set()))
+    metadata.splits should be(Set())
 
     // Tests on bigs
     bigsExpected.files.size should be(1)
-    bigs should be (bigsExpected)
+    metadata.bigs should be (bigsExpected)
 
     // Tests on smalls
     smallsExpected.files.size should be(2)
-    smalls should be (smallsExpected)
+    metadata.smalls should be (smallsExpected)
 
     val expectedRddWithOnlyBigFileSplit = sc.newAPIHadoopFile[K, V, I](SplitsDir(splitsDir).getDataPath)
     expectedRddWithOnlyBigFileSplit.count() should be (5)

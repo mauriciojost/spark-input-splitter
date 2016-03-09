@@ -2,7 +2,7 @@ package eu.pepot.eu.spark.inputsplitter
 
 import eu.pepot.eu.spark.inputsplitter.common.config.Config
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.FilesMatcher
-import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSetSubstractor, FileLister, Mappings}
+import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSetSubstractor, FileLister}
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Arrow, Metadata, SplitDetails, SplitsDir}
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.mapreduce.{InputFormat, OutputFormat}
@@ -27,21 +27,21 @@ class SplitReader(
     splitsDir: String
   )(implicit sc: SparkContext): SplitDetails[K, V] = {
     val splitsDirO = SplitsDir(splitsDir)
-    val discoveredMetadata = determineSplitsSmallsBigs(inputDir, splitsDirO)
+    val (discSplits, discBigs, discSmalls) = determineSplitsSmallsBigs(inputDir, splitsDirO)
     val loadedMetadata = Metadata.load(splitsDirO)(FileSystem.get(sc.hadoopConfiguration))
-    val Metadata(resolvedMapping, resolvedSplits, resolvedBigs, resolvedSmalls) = Metadata.resolve(loadedMetadata, discoveredMetadata)
-    val rdds = (resolvedSmalls.files ++ resolvedSplits.files).map(f => Arrow(f, sc.newAPIHadoopFile[K, V, I](f.path)))
-    SplitDetails[K, V](rdds.toSeq, Metadata(Mappings(Set()), resolvedSplits, resolvedBigs, resolvedSmalls))
+    val resolvedMetadata = loadedMetadata.resolve(discSplits, discBigs, discSmalls)(config.metadataResolver)
+    val rdds = resolvedMetadata.smallsAndSplits.map(f => Arrow(f, sc.newAPIHadoopFile[K, V, I](f.path)))
+    SplitDetails[K, V](rdds.toSeq, resolvedMetadata)
   }
 
   private[inputsplitter] def determineSplitsSmallsBigs(
     inputDir: String,
     splitsDir: SplitsDir
-  )(implicit sc: SparkContext): Metadata = {
+  )(implicit sc: SparkContext) = {
     val input = FileLister.listFiles(inputDir)
     val bigs = FilesMatcher.matches(input, config.splitCondition)
     val splits = FileLister.listFiles(splitsDir.getDataPath)
     val smalls = FileDetailsSetSubstractor.substract(input, bigs)
-    Metadata(Mappings(Set()), splits, bigs, smalls)
+    (splits, bigs, smalls)
   }
 }
