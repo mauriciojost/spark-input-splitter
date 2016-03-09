@@ -42,6 +42,7 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext with Matchers {
 
     val conditionForSplitting = Condition(biggerThan = Some(50)) // Expecting to have splits of files bigger than 50 bytes
 
+    val expectedRdd = sc.newAPIHadoopFile[K, V, I](inputDir)
     val inputExpected = FileLister.listFiles(inputDir)
     val splitsExpected = FileLister.listFiles(SplitsDir(splitsDir).getDataPath)
     val bigsExpected = FilesMatcher.matches(inputExpected, conditionForSplitting)
@@ -54,28 +55,24 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext with Matchers {
       )
     )
 
+    // Asserts on expected metadata and RDD (sanity check)
+    inputExpected.files.size should be(3)
+    splitsExpected.files.size should be(1)
+    bigsExpected.files.size should be(1)
+    smallsExpected.files.size should be(2)
+    expectedRdd.count() should be (9)
+
+
     val SplitDetails(rddWithWholeInput, metadata) = splitReader.rdds[K, V, I, O](inputDir, splitsDir)
 
-    // TODO mapping asserts
 
-    // Tests on inputs
-    inputExpected.files.size should be(3)
-
-    // Tests on splits
-    splitsExpected.files.size should be(1)
+    // Asserts on the metadata returned
     metadata.splits should be (splitsExpected.files)
-
-    // Tests on bigs
-    bigsExpected.files.size should be(1)
     metadata.bigs.files should be (bigsExpected.files)
-
-    // Tests on smalls
-    smallsExpected.files.size should be(2)
     metadata.smalls should be (smallsExpected)
+    metadata.mappings should be (Mappings(Set((bigsExpected.files.head, splitsExpected.files.head))))
 
-    // Tests on the RDD (whole input)
-    val expectedRdd = sc.newAPIHadoopFile[K, V, I](inputDir)
-    expectedRdd.count() should be (9)
+    // Asserts on the RDD (should be equivalent to the whole input)
     sc.union(rddWithWholeInput.map(_.rdd)).count() should be (9)
     expectedRdd.count() should be (sc.union(rddWithWholeInput.map(_.rdd)).count())
     RDDComparisions.compare(expectedRdd, sc.union(rddWithWholeInput.map(_.rdd))) should be (None)
