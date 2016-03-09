@@ -54,7 +54,7 @@ class SplitReaderSpec extends FunSuite with CustomSparkContext with Matchers {
       )
     )
 
-    val SplitDetails(rddWithWholeInput, metadata) = splitReader.rdd[K, V, I, O](inputDir, splitsDir)
+    val SplitDetails(rddWithWholeInput, metadata) = splitReader.rdds[K, V, I, O](inputDir, splitsDir)
 
     // TODO mapping asserts
 
