@@ -94,11 +94,11 @@ class SplitWriter(
     inputDir: String
   )(implicit sc: SparkContext): (FileDetailsSet, FileDetailsSet) = {
     val input = FileLister.listFiles(inputDir)
-    logger.warn("Using input: {}", inputDir)
+    logger.info("Using input: {}", inputDir)
     val bigs = FilesMatcher.matches(input, config.splitCondition)
-    logger.warn("Detected bigs from input: {}", bigs)
+    logger.info("Detected bigs from input: {}", bigs)
     val smalls = FileDetailsSetSubstractor.substract(input, bigs)
-    logger.warn("Detected smalls from input: {}", smalls)
+    logger.info("Detected smalls from input: {}", smalls)
     (bigs, smalls)
   }
 
