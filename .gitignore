@@ -1,3 +1,6 @@
+/xtras/scripts/data-sample-00/input/
+/xtras/scripts/data-sample-00/output/
+/xtras/scripts/data-sample-00/splits/
 /data/
 /logs/
 conf/spark-defaults.conf
