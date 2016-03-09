@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 import scala.reflect.ClassTag
 
 class SplitReader(
-  config: Config
+  config: Config = Config()
 ) {
 
   val logger = LoggerFactory.getLogger(this.getClass)
