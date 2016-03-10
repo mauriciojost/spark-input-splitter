@@ -27,45 +27,36 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
 
     val conditionForSplitting = Condition(biggerThan = Some(50)) // only big.txt is bigger than this
 
+    val splitWriter = new SplitWriter(Config(conditionForSplitting))
+
     val inputExpected = FileLister.listFiles(inputDir)
     val splitsExpected = FileLister.listFiles(SplitsDir(splitsDir).getDataPath)
     val bigsExpected = FilesMatcher.matches(inputExpected, conditionForSplitting)
     val smallsExpected = FileDetailsSetSubstractor.substract(inputExpected, bigsExpected)
-    val mappingsExpected = Mappings(
-      Set(
-        (FileDetails(bigsExpected.files.head.path, 105), FileDetails(splitsExpected.files.head.path, 105))
-      )
-    )
+    //val mappingsExpected = Mappings(Set((toFDs(bigsExpected.files.head.path), toFDs(splitsExpected.files.head.path))))
+    val expectedRddWithOnlyBigFileSplit = sc.newAPIHadoopFile[K, V, I](SplitsDir(splitsDir).getDataPath)
 
-    val splitWriter = new SplitWriter(Config(conditionForSplitting))
+    // Asserts on expected metadata and RDD (sanity check)
+    inputExpected.files.size should be(3)
+    splitsExpected.files.size should be(1)
+    bigsExpected.files.size should be(1)
+    smallsExpected.files.size should be(2)
+    expectedRddWithOnlyBigFileSplit.count() should be(5)
+    //mappingsExpected.bigsToSplits.size should be(1)
+
 
     val SplitDetails(rddWithOnlyBigsRecords, metadata) = splitWriter.asRddNew[K, V, I, O](inputDir)
 
-    // Tests on inputs
-    inputExpected.files.size should be(3)
 
-    // Tests on mappings
-    //mappingsExpected.bigsToSplits.size should be(1)
-    //mappings should be(mappingsExpected)
-
-    // Tests on splits
-    splitsExpected.files.size should be(1)
+    // Asserts on the metadata returned
     metadata.splits should be(Set())
+    metadata.bigs should be(bigsExpected)
+    metadata.smalls should be(smallsExpected)
+    //metadata.mappings should be(mappingsExpected)
 
-    // Tests on bigs
-    bigsExpected.files.size should be(1)
-    metadata.bigs should be (bigsExpected)
-
-    // Tests on smalls
-    smallsExpected.files.size should be(2)
-    metadata.smalls should be (smallsExpected)
-
-    val expectedRddWithOnlyBigFileSplit = sc.newAPIHadoopFile[K, V, I](SplitsDir(splitsDir).getDataPath)
-    expectedRddWithOnlyBigFileSplit.count() should be (5)
-
-    sc.union(rddWithOnlyBigsRecords.map(_.rdd)).count() should be (5)
-    expectedRddWithOnlyBigFileSplit.count() should be (sc.union(rddWithOnlyBigsRecords.map(_.rdd)).count())
-    sc.union(rddWithOnlyBigsRecords.map(_.rdd)).collect() should be (expectedRddWithOnlyBigFileSplit.collect())
+    // Asserts on the RDD (should be equivalent to the bigs)
+    sc.union(rddWithOnlyBigsRecords.map(_.rdd)).count() should be(expectedRddWithOnlyBigFileSplit.count())
+    sc.union(rddWithOnlyBigsRecords.map(_.rdd)).collect() should be(expectedRddWithOnlyBigFileSplit.collect())
 
   }
 
