@@ -4,7 +4,9 @@
 - Conform to Scala convertions about constants.
 - Add more log messages.
 - Document public API.
+- Support old Hadoop API.
 - Release. 
 - Publish in Maven Central.
+
 
 
