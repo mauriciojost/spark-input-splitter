@@ -4,7 +4,7 @@ import com.google.common.io.Files
 import eu.pepot.eu.spark.inputsplitter.common.file.{Mappings, FileDetailsSet}
 import eu.pepot.eu.spark.inputsplitter.common.splits.resolvers.IdentityMetadataResolver
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
-import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
+import eu.pepot.eu.spark.inputsplitter.helper.TestsHelper._
 import org.apache.commons.io.FileUtils
 import org.apache.hadoop.fs.FileSystem
 import org.scalatest.{FunSuite, Matchers}

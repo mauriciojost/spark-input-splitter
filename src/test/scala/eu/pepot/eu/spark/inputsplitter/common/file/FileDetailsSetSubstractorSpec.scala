@@ -1,6 +1,6 @@
 package eu.pepot.eu.spark.inputsplitter.common.file
 
-import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
+import eu.pepot.eu.spark.inputsplitter.helper.TestsHelper._
 import org.specs2.mutable._
 
 class FileDetailsSetSubstractorSpec extends Specification {

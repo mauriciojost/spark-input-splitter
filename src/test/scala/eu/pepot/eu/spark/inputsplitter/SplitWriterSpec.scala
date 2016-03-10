@@ -5,7 +5,7 @@ import eu.pepot.eu.spark.inputsplitter.common.file._
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.{Condition, FilesMatcher}
 import eu.pepot.eu.spark.inputsplitter.common.splits.{SplitDetails, SplitsDir}
 import eu.pepot.eu.spark.inputsplitter.helper.CustomSparkContext
-import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
+import eu.pepot.eu.spark.inputsplitter.helper.TestsHelper._
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat

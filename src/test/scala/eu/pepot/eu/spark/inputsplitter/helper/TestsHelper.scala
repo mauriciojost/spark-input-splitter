@@ -3,11 +3,12 @@ package eu.pepot.eu.spark.inputsplitter.helper
 import java.io.File
 
 import eu.pepot.eu.spark.inputsplitter.common.file.FileDetails
+import Helper._
 
-object TestConstants {
+object TestsHelper {
 
   def resourcesBaseDir(subDir: String) = {
-    "src/test/resources/eu/pepot/eu/spark/inputsplitter/samples/" + subDir
+    toStringPath("src/test/resources/eu/pepot/eu/spark/inputsplitter/samples", subDir)
   }
 
   def resourcesBaseDirWithAbsolutePath(subDir: String) = {

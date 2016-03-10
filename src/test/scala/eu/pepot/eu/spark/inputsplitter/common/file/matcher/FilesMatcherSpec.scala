@@ -2,7 +2,7 @@ package eu.pepot.eu.spark.inputsplitter.common.file.matcher
 
 import java.io.{File, FileNotFoundException}
 
-import eu.pepot.eu.spark.inputsplitter.helper.TestConstants._
+import eu.pepot.eu.spark.inputsplitter.helper.TestsHelper._
 import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetails, FileDetailsSet}
 import org.apache.hadoop.fs.Path
 import org.specs2.mutable.Specification

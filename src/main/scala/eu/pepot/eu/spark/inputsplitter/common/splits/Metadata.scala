@@ -1,8 +1,9 @@
 package eu.pepot.eu.spark.inputsplitter.common.splits
 
 import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetails, FileDetailsSet, Mappings}
+import eu.pepot.eu.spark.inputsplitter.helper.Helper._
 import eu.pepot.eu.spark.inputsplitter.common.splits.resolvers.MetadataResolver
-import org.apache.hadoop.fs.{FSDataInputStream, FSDataOutputStream, FileSystem, Path}
+import org.apache.hadoop.fs.{FSDataInputStream, FSDataOutputStream, FileSystem}
 import org.slf4j.LoggerFactory
 
 case class Metadata(
@@ -43,7 +44,7 @@ object Metadata {
   val SPLITS_MAPPING_FILENAME = "splits.mapping"
 
   def load(splitsDirO: SplitsDir)(implicit fs: FileSystem): Metadata = {
-    val splitsMappingFile = new Path(splitsDirO.getMetadataPath + "/" + SPLITS_MAPPING_FILENAME)
+    val splitsMappingFile = toPath(splitsDirO.getMetadataPath, SPLITS_MAPPING_FILENAME)
 
     logger.debug("Loading metadata from: " + splitsMappingFile)
 
@@ -60,7 +61,7 @@ object Metadata {
   }
 
   def dump(md: Metadata, splitsDirO: SplitsDir)(implicit fs: FileSystem): Unit = {
-    val splitsMappingFile = new Path(splitsDirO.getMetadataPath + "/" + SPLITS_MAPPING_FILENAME)
+    val splitsMappingFile = toPath(splitsDirO.getMetadataPath, SPLITS_MAPPING_FILENAME)
 
     logger.debug("Dumping metadata to: " + splitsMappingFile)
 
