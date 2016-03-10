@@ -12,7 +12,7 @@ object TestsHelper {
   }
 
   def resourcesBaseDirWithAbsolutePath(subDir: String) = {
-    new File("src/test/resources/eu/pepot/eu/spark/inputsplitter/samples/" + subDir).getAbsolutePath
+    new File("src/test/resources/eu/pepot/eu/spark/inputsplitter/samples", subDir).getAbsolutePath
   }
 
   def toFDs(s: String): FileDetails = {
