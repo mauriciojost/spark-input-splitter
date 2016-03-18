@@ -60,5 +60,39 @@ class SplitWriterSpec extends FunSuite with CustomSparkContext with Matchers {
 
   }
 
+  test("the split writer splits the bigs with good mapping (scenario-000)") {
+
+    implicit val scc = sc
+
+    val conditionForSplitting = Condition(biggerThan = Some(50)) // only big.txt is bigger than this
+
+    val splitWriter = new SplitWriter(Config(conditionForSplitting))
+
+    val inputExpected = FileLister.listFiles(inputDir)
+    val splitsExpected = FileLister.listFiles(SplitsDir(splitsDir).getDataPath)
+    val bigsExpected = FilesMatcher.matches(inputExpected, conditionForSplitting)
+    val smallsExpected = FileDetailsSetSubstractor.substract(inputExpected, bigsExpected)
+    val mappingsExpected = Mappings(Set((toFDs(bigsExpected.files.head.path), toFDs(splitsExpected.files.head.path))))
+    val expectedRddWithOnlyBigFileSplit = sc.newAPIHadoopFile[K, V, I](SplitsDir(splitsDir).getDataPath)
+
+    // Asserts on expected metadata and RDD (sanity check)
+    mappingsExpected.bigsToSplits.size should be(1)
+
+
+    val SplitDetails(rddWithOnlyBigsRecords, metadata) = splitWriter.asRddNew[K, V, I, O](inputDir)
+
+
+    // Asserts on the metadata returned
+    metadata.splits should be(Set())
+    metadata.bigs should be(bigsExpected)
+    metadata.smalls should be(smallsExpected)
+    //metadata.mappings should be(mappingsExpected)
+
+    // Asserts on the RDD (should be equivalent to the bigs)
+    sc.union(rddWithOnlyBigsRecords.map(_.rdd)).count() should be(expectedRddWithOnlyBigFileSplit.count())
+    sc.union(rddWithOnlyBigsRecords.map(_.rdd)).collect() should be(expectedRddWithOnlyBigFileSplit.collect())
+
+  }
+
 }
 
