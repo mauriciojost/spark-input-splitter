@@ -5,12 +5,14 @@ import eu.pepot.eu.spark.inputsplitter.common.splits.resolvers.{IdentityMetadata
 
 case class Config(
   splitCondition: Condition = Condition(),
-  bytesPerSplit: Float = 1024 * 1024 * 128,
-  metadataResolver: MetadataResolver = IdentityMetadataResolver
+  bytesPerSplit: Long = 1024L * 1024 * 128,
+  metadataResolver: MetadataResolver = IdentityMetadataResolver,
+  rddWriteTimeoutSeconds: Int = 3600
 ) {
 
   def getAmountOfSplits(bytes: Long): Int = {
-    Math.max(2, bytes / bytesPerSplit).toInt
+    val splits = bytes / bytesPerSplit
+    Math.max(2, splits).toInt
   }
 
 }

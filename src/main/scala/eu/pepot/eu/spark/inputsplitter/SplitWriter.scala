@@ -1,5 +1,7 @@
 package eu.pepot.eu.spark.inputsplitter
 
+import java.util.concurrent.{Executors, TimeUnit}
+
 import eu.pepot.eu.spark.inputsplitter.common.config.Config
 import eu.pepot.eu.spark.inputsplitter.common.file._
 import eu.pepot.eu.spark.inputsplitter.common.file.matcher.FilesMatcher
@@ -9,11 +11,16 @@ import org.apache.hadoop.mapreduce
 import org.apache.spark.SparkContext
 import org.slf4j.LoggerFactory
 
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.reflect.ClassTag
 
 class SplitWriter(
   config: Config = Config()
 ) {
+  val rddWriteTimeoutSeconds = Duration(config.rddWriteTimeoutSeconds, TimeUnit.SECONDS)
+  val tp = Executors.newCachedThreadPool()
+  implicit val ec = ExecutionContext.fromExecutorService(tp)
 
   val logger = LoggerFactory.getLogger(this.getClass)
 
@@ -28,15 +35,31 @@ class SplitWriter(
   )(implicit sc: SparkContext): Unit = {
     val splitsDirO = SplitsDir(splitsDir)
     val splitDetails = asRddNew[K, V, I, O](inputDir)
-    val mappings = splitDetails.arrows.flatMap { arrow =>
+    val futureResults = splitDetails.arrows.map { arrow =>
       val outputDirectory = splitsDirO.getDataPathWith(arrow.big.asPath().getName)
       val outputNroSplits = config.getAmountOfSplits(arrow.big.size)
-      arrow.rdd.repartition(outputNroSplits).saveAsNewAPIHadoopFile[O](outputDirectory)
+      val result = arrow.rdd.repartition(outputNroSplits)
+      Future(result.saveAsNewAPIHadoopFile[O](outputDirectory))
+    }
+
+    waitForFutures(futureResults)
+
+    val mappings = splitDetails.arrows.flatMap { arrow =>
+      val outputDirectory = splitsDirO.getDataPathWith(arrow.big.asPath().getName)
       val outputPartitionFiles = FileLister.listFiles(outputDirectory).files
       outputPartitionFiles.map(outputPartitionFile => (arrow.big, outputPartitionFile))
     }.toSet
     implicit val fs = FileSystem.get(sc.hadoopConfiguration)
     Metadata.dump(Metadata(Mappings(mappings), splitDetails.metadata.bigs, splitDetails.metadata.smalls), splitsDirO)
+  }
+
+  def waitForFutures(futureResults: Seq[Future[Unit]]): Unit = {
+    futureResults.foreach { f =>
+      Await.result(f, rddWriteTimeoutSeconds)
+      f.onFailure {
+        case failure => throw failure
+      }
+    }
   }
 
   private[inputsplitter] def asRddNew[
