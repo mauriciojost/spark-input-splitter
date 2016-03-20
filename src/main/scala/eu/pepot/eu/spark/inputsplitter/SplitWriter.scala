@@ -18,10 +18,8 @@ import scala.reflect.ClassTag
 class SplitWriter(
   config: Config = Config()
 ) {
-  val rddWriteTimeoutSeconds = Duration(config.rddWriteTimeoutSeconds, TimeUnit.SECONDS)
-  val tp = Executors.newCachedThreadPool()
-  implicit val ec = ExecutionContext.fromExecutorService(tp)
 
+  implicit val executionContext = ExecutionContext.fromExecutorService(Executors.newCachedThreadPool())
   val logger = Logger.getLogger(this.getClass)
 
   def writeNewAPI[
@@ -54,7 +52,7 @@ class SplitWriter(
 
   def waitForFutures(futureResults: Seq[Future[Unit]]): Unit = {
     futureResults.foreach { f =>
-      Await.result(f, rddWriteTimeoutSeconds)
+      Await.result(f, Duration(config.rddWriteTimeoutSeconds, TimeUnit.SECONDS))
       f.onFailure {
         case failure => throw failure
       }
