@@ -9,7 +9,7 @@ import eu.pepot.eu.spark.inputsplitter.common.splits.{Arrow, Metadata, SplitDeta
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.mapreduce
 import org.apache.spark.SparkContext
-import org.slf4j.LoggerFactory
+import org.apache.log4j.Logger
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -22,7 +22,7 @@ class SplitWriter(
   val tp = Executors.newCachedThreadPool()
   implicit val ec = ExecutionContext.fromExecutorService(tp)
 
-  val logger = LoggerFactory.getLogger(this.getClass)
+  val logger = Logger.getLogger(this.getClass)
 
   def writeNewAPI[
   K: ClassTag,
@@ -82,11 +82,11 @@ class SplitWriter(
     inputDir: String
   )(implicit sc: SparkContext): (FileDetailsSet, FileDetailsSet) = {
     val input = FileLister.listFiles(inputDir)
-    logger.info("Using input: {}", inputDir)
+    logger.info("Using input: " + inputDir)
     val bigs = FilesMatcher.matches(input, config.splitCondition)
-    logger.info("Detected bigs from input: {}", bigs)
+    logger.info("Detected bigs from input: " + bigs)
     val smalls = FileDetailsSetSubstractor.substract(input, bigs)
-    logger.info("Detected smalls from input: {}", smalls)
+    logger.info("Detected smalls from input: " + smalls)
     (bigs, smalls)
   }
 

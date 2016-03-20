@@ -1,10 +1,10 @@
 package eu.pepot.eu.spark.inputsplitter.common.file
 
-import org.slf4j.LoggerFactory
+import org.apache.log4j.Logger
 
 object FileDetailsSetSubstractor {
 
-  val logger = LoggerFactory.getLogger(this.getClass)
+  val logger = Logger.getLogger(this.getClass)
 
   def substract(baseSet: FileDetailsSet, substractSet: FileDetailsSet): FileDetailsSet = {
     FileDetailsSet(

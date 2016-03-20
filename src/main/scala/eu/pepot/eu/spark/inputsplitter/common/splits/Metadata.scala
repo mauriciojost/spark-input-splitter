@@ -4,7 +4,7 @@ import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetails, FileDetailsSet,
 import eu.pepot.eu.spark.inputsplitter.helper.Helper._
 import eu.pepot.eu.spark.inputsplitter.common.splits.resolvers.MetadataResolver
 import org.apache.hadoop.fs.{FSDataInputStream, FSDataOutputStream, FileSystem}
-import org.slf4j.LoggerFactory
+import org.apache.log4j.Logger
 
 case class Metadata(
   mappings: Mappings,
@@ -33,7 +33,7 @@ case class Metadata(
 
 object Metadata {
 
-  val logger = LoggerFactory.getLogger(this.getClass)
+  val logger = Logger.getLogger(this.getClass)
 
   val BIG_KEY = "I"
   val SMALL_KEY = "i"

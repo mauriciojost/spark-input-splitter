@@ -6,9 +6,9 @@ import eu.pepot.eu.spark.inputsplitter.common.file.{FileDetailsSetSubstractor, F
 import eu.pepot.eu.spark.inputsplitter.common.splits.{Arrow, Metadata, SplitDetails, SplitsDir}
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.mapreduce.{InputFormat, OutputFormat}
+import org.apache.log4j.Logger
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
-import org.slf4j.LoggerFactory
 
 import scala.reflect.ClassTag
 
@@ -16,7 +16,7 @@ class SplitReader(
   config: Config = Config()
 ) {
 
-  val logger = LoggerFactory.getLogger(this.getClass)
+  val logger = Logger.getLogger(this.getClass)
 
   def rdd[
   K: ClassTag,
