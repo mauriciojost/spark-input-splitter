@@ -34,6 +34,8 @@ object ExampleSplitWrite {
 
     splitter.writeNewAPI[K, V, I, O](input, splits)
 
+    sc.stop()
+
   }
 
 }

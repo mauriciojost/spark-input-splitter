@@ -38,6 +38,8 @@ object ExampleSplitRead {
 
     rdd.saveAsNewAPIHadoopFile[O](output)
 
+    sc.stop()
+
   }
 
 }
