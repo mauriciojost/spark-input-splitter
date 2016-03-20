@@ -37,8 +37,7 @@ class SplitWriter(
     val splitDetails = asRddNew[K, V, I, O](inputDir)
     val futureResults = splitDetails.arrows.map { arrow =>
       val outputDirectory = splitsDirO.getDataPathWith(arrow.big.asPath().getName)
-      val outputNroSplits = config.getAmountOfSplits(arrow.big.size)
-      val result = arrow.rdd.repartition(outputNroSplits)
+      val result = arrow.rdd.repartition(arrow.getNroExpectedSplits(config.bytesPerSplit))
       Future(result.saveAsNewAPIHadoopFile[O](outputDirectory))
     }
 

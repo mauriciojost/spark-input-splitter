@@ -20,6 +20,9 @@ libraryDependencies += "com.holdenkarau" %% "spark-testing-base" % "1.3.0_0.2.0"
 
 libraryDependencies += "org.specs2" %% "specs2-core" % "3.7" % "test"
 
+libraryDependencies += "org.mockito" % "mockito-all" % "1.9.5" % "test"
+
+
 resolvers += Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksamuel/sbt-plugins/"))(Resolver.ivyStylePatterns)
 
 mergeStrategy in assembly <<= (mergeStrategy in assembly) { mergeStrategy => {

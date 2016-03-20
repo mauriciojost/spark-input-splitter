@@ -8,11 +8,4 @@ case class Config(
   bytesPerSplit: Long = 1024L * 1024 * 128,
   metadataResolver: MetadataResolver = IdentityMetadataResolver,
   rddWriteTimeoutSeconds: Int = 3600
-) {
-
-  def getAmountOfSplits(bytes: Long): Int = {
-    val splits = bytes / bytesPerSplit
-    Math.max(2, splits).toInt
-  }
-
-}
+)
