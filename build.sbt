@@ -40,4 +40,3 @@ parallelExecution in Test := false
 
 packageArchetype.java_application
 
-net.virtualvoid.sbt.graph.Plugin.graphSettings
